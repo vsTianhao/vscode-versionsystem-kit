@@ -1,0 +1,7 @@
+{
+	"Add commands": {
+		"prefix": ["add-commands"],
+		"body": ["context.subscriptions.push(vscode.commands.registerCommand('vscode-versionsystem-kit.currentPath')", "\t$0", "}));"],
+		"description": "Add commands on vscode extension"
+	}
+}

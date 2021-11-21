@@ -1,0 +1,204 @@
+{
+    "name": "vscode-versionsystem-kit",
+    "displayName": "Versionsystem kit",
+    "description": "versionsystem kit",
+	"publisher": "vsTianhao",
+    "version": "0.0.1",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/vsTianhao/vscode-versionsystem-kit.git"
+    },
+    "engines": {
+        "vscode": "^1.62.0"
+    },
+    "categories": [
+        "Snippets",
+        "Other"
+    ],
+    "main": "./out/main.js",
+    "activationEvents": [
+        "onCommand:vscode-versionsystem-kit.currentPath",
+        "onCommand:vscode-versionsystem-kit.checkCurrentConfig",
+        "onCommand:vscode-versionsystem-kit.build",
+        "onCommand:vscode-versionsystem-kit.dev"
+    ],
+    "contributes": {
+        "commands": [
+            {
+                "command": "vscode-versionsystem-kit.currentPath",
+                "title": "Versionsystem Kit: Alert current path"
+            },
+            {
+                "command": "vscode-versionsystem-kit.checkCurrentConfig",
+                "title": "Versionsystem Kit: Check Current Config"
+            },
+            {
+                "command": "vscode-versionsystem-kit.build",
+                "title": "Versionsystem Kit: Build Client"
+            },
+            {
+                "command": "vscode-versionsystem-kit.dev",
+                "title": "Versionsystem Kit: Run in development mode"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "VS kit",
+            "properties": {
+                "vskit.port": {
+                    "type": "number",
+                    "default": 9000,
+                    "minimum": 1,
+                    "description": "开发模式的默认端口号为9000，0到1023之间的端口号要保留给预定义服务，但"
+                },
+                "vskit.logLevel": {
+                    "type": "string",
+                    "default": "DEBUG",
+                    "enum": [
+                        "TRACE",
+                        "DEBUG",
+                        "INFO",
+                        "WARN",
+                        "ERROR",
+                        "FATAL"
+                    ],
+                    "description": "日志级别从低到高为: TRACE(跟踪),DEBUG(调试),INFO(信息),WARN(警告),ERROR(错误),FATAL(失败)"
+                },
+                "vskit.logPattern": {
+                    "type": "string",
+                    "default": "%[%d{[yyyy-MM-dd hh:mm:ss]} %p%] %c: %m",
+                    "description": "日志的格式前往 https://github.com/log4js-node/log4js-node/blob/f8d46a939279c0ab4efc8bb5f0478c4b0949a4cf/docs/layouts.md"
+                },
+                "vskit.moduleName": {
+                    "type": "string",
+                    "description": "angularjs的模块名"
+                },
+                "vskit.remotePrefix": {
+                    "type": "string",
+                    "description": "远程服务器的目录"
+                },
+                "vskit.appPath": {
+                    "type": "string",
+                    "description": "主体路径"
+                },
+                "vskit.mainJS": {
+                    "type": "string",
+                    "description": "入口JS"
+                },
+                "vskit.appHTML": {
+                    "type": "string",
+                    "description": "所有模块的HTML"
+                },
+                "vskit.componentsHTML": {
+                    "type": "string",
+                    "description": "所有通用的HTML"
+                },
+                "vskit.frondendMainHTML": {
+                    "type": "string",
+                    "description": "前台的入口HTML"
+                },
+                "vskit.backendMainHTML": {
+                    "type": "string",
+                    "description": "后台的入口HTML"
+                },
+                "vskit.entries": {
+                    "type": "object",
+                    "description": "所有的主体JS目录，需是一个数组"
+                },
+                "vskit.cssMatch": {
+                    "type": "object",
+                    "description": "所有的CSS目录，需是一个数组"
+                },
+                "vskit.remoteFiles": {
+                    "type": "object",
+                    "description": "这是个json"
+                }
+            }
+        },
+        "views": {
+            "vskit-view": [
+                {
+                    "id": "vskit.views.leftBar",
+                    "name": "Kit",
+                    "contextualTitle": "VS-kit"
+                }
+            ]
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "vskit-view",
+                    "title": "VersionSystem",
+                    "icon": "./resources/leftBar.svg"
+                }
+            ]
+        },
+        "snippets": [
+            {
+                "language": "typescript",
+                "path": "./snippets/extension.code-snippets"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "lint": "eslint src --ext ts",
+        "watch": "tsc -watch -p ./",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "dependencies": {
+        "@babel/core": "^7.14.6",
+        "@babel/preset-env": "^7.14.7",
+        "@babel/preset-react": "^7.14.5",
+        "babelify": "^10.0.0",
+        "browserify": "^17.0.0",
+        "chalk": "^1.1.3",
+        "connect-livereload": "^0.6.1",
+        "del": "^1.1.1",
+        "event-stream": "^4.0.1",
+        "fastify": "^3.19.2",
+        "gulp": "^4.0.2",
+        "gulp-angular-templatecache": "^3.0.0",
+        "gulp-babel": "^8.0.0",
+        "gulp-cachebust": "0.0.5",
+        "gulp-change": "^1.0 .2",
+        "gulp-clean-css": "^4.3.0",
+        "gulp-concat": "^2.5.2",
+        "gulp-inject": "^5.0.5",
+        "gulp-ng-annotate": "^2.1.0",
+        "gulp-sass": "^5.0.0",
+        "gulp-sort": "^2.0.0",
+        "gulp-sourcemaps": "^1.5.1",
+        "gulp-uglify": "^1.1.0",
+        "log4js": "^6.3.0",
+        "middie": "^5.3.0",
+        "node-sass": "^6.0.1",
+        "prompt": "^1.1.0",
+        "sass": "^1.18.0",
+        "scp2": "^0.5.0",
+        "serve-static": "^1.14.1",
+        "stable": "^0.1.8",
+        "tiny-lr": "^2.0.0",
+        "vinyl": "^2.2.1",
+        "vinyl-buffer": "^1.0.1",
+        "vinyl-source-stream": "^2.0.0"
+    },
+    "devDependencies": {
+        "@types/browserify": "^12.0.37",
+        "@types/chalk": "^2.2.0",
+        "@types/connect-livereload": "^0.6.0",
+        "@types/event-stream": "^4.0.0",
+        "@types/glob": "^7.1.1",
+        "@types/gulp": "^4.0.9",
+        "@types/gulp-sort": "^2.0.0",
+        "@types/mocha": "^7.0.2",
+        "@types/node": "^13.13.52",
+        "@types/vscode": "^1.62.0",
+        "@typescript-eslint/eslint-plugin": "^2.26.0",
+        "@typescript-eslint/parser": "^2.26.0",
+        "eslint": "^6.8.0",
+        "glob": "^7.1.6",
+        "typescript": "^3.9.10"
+    }
+}

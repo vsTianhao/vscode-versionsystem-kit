@@ -2,7 +2,7 @@
     "name": "vscode-versionsystem-kit",
     "displayName": "Versionsystem kit",
     "description": "versionsystem kit",
-	"publisher": "vsTianhao",
+    "publisher": "vsTianhao",
     "version": "0.0.1",
     "repository": {
         "type": "git",
@@ -17,8 +17,9 @@
     ],
     "main": "./out/main.js",
     "activationEvents": [
+        "onView:vskit.views.leftBar",
         "onCommand:vscode-versionsystem-kit.currentPath",
-        "onCommand:vscode-versionsystem-kit.checkCurrentConfig",
+        "onCommand:vscode-versionsystem-kit.config",
         "onCommand:vscode-versionsystem-kit.build",
         "onCommand:vscode-versionsystem-kit.dev"
     ],
@@ -29,8 +30,8 @@
                 "title": "Versionsystem Kit: Alert current path"
             },
             {
-                "command": "vscode-versionsystem-kit.checkCurrentConfig",
-                "title": "Versionsystem Kit: Check Current Config"
+                "command": "vscode-versionsystem-kit.config",
+                "title": "Versionsystem Kit: Show Current Config"
             },
             {
                 "command": "vscode-versionsystem-kit.build",
@@ -48,12 +49,14 @@
                 "vskit.port": {
                     "type": "number",
                     "default": 9000,
+                    "scope": "resource",
                     "minimum": 1,
-                    "description": "开发模式的默认端口号为9000，0到1023之间的端口号要保留给预定义服务，但"
+                    "description": "开发模式的默认端口号为9000，0到1023之间的端口号要保留给预定义服务，但80/433等端口也是可以使用的"
                 },
                 "vskit.logLevel": {
                     "type": "string",
                     "default": "DEBUG",
+                    "scope": "resource",
                     "enum": [
                         "TRACE",
                         "DEBUG",
@@ -66,19 +69,28 @@
                 },
                 "vskit.logPattern": {
                     "type": "string",
-                    "default": "%[%d{[yyyy-MM-dd hh:mm:ss]} %p%] %c: %m",
+                    "scope": "resource",
+                    "default": "%d{[yyyy-MM-dd hh:mm:ss]} %p %c: %m",
                     "description": "日志的格式前往 https://github.com/log4js-node/log4js-node/blob/f8d46a939279c0ab4efc8bb5f0478c4b0949a4cf/docs/layouts.md"
                 },
-                "vskit.moduleName": {
+                "vskit.projectName": {
                     "type": "string",
-                    "description": "angularjs的模块名"
+                    "scope": "resource",
+                    "description": "项目名"
                 },
                 "vskit.remotePrefix": {
                     "type": "string",
+                    "scope": "resource",
                     "description": "远程服务器的目录"
+                },
+                "vskit.moduleName": {
+                    "type": "string",
+                    "scope": "resource",
+                    "description": "angularjs的模块名"
                 },
                 "vskit.appPath": {
                     "type": "string",
+                    "scope": "resource",
                     "description": "主体路径"
                 },
                 "vskit.mainJS": {

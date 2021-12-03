@@ -1,15 +1,21 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 
-export class TaskItemBtn extends vscode.TreeItem {
+export default class TaskItemBtn extends vscode.TreeItem {
 
     public taskId: string
     public type: string
 
-    constructor(
-        taskId: string, name: string, type = "task"
-    ) {
-        super(name, type === "group" ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None)
+    constructor(taskId: string, name: string, type = "task") {
+        super(name, type === "group" ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None)
+        if (taskId.indexOf("-") !== -1) {
+            const [group, type] = taskId.split("-")
+            this.command = {
+                title: "vscode-versionsystem-kit." + group,
+                command: "vscode-versionsystem-kit." + group,
+                arguments: [type]
+            }
+        }
         this.taskId = taskId
         this.type = type
         this.tooltip = name
@@ -19,6 +25,5 @@ export class TaskItemBtn extends vscode.TreeItem {
         }
         // this.description = description
     }
-
 
 }

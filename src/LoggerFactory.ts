@@ -3,6 +3,7 @@ import * as log4js from "log4js"
 import Configuration from "./Configuration"
 
 let isConfigure = false
+const channel: vscode.OutputChannel = vscode.window.createOutputChannel("Versionsystem-Kit")
 
 const defaultLogConfig: log4js.Configuration = {
 	appenders: {
@@ -14,7 +15,6 @@ const defaultLogConfig: log4js.Configuration = {
 						layout = layouts.layout(config.layout.type, config.layout)
 					}
 					return (loggingEvent: log4js.LoggingEvent): void => {
-						const channel: vscode.OutputChannel = vscode.window.createOutputChannel("Versionsystem-Kit")
 						channel.appendLine(`${layout(loggingEvent, config.timezoneOffset)}\n`)
 					}
 				}
@@ -35,7 +35,4 @@ export default function LoggerFactory(category): log4js.Logger {
 		log4js.configure(defaultLogConfig)
 	}
 	return log4js.getLogger(category)
-	// const logger = log4js.getLogger(category)
-	// logger.level = Configuration("logLevel")
-	// return logger
 }

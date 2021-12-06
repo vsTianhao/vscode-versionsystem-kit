@@ -20,8 +20,8 @@ export default class TaskItemBtn extends vscode.TreeItem {
         this.type = type
         this.tooltip = name
         this.iconPath = {
-            light: path.join(__filename, '..', '..', '..', 'resources', 'light', this.type + '.svg'),
-            dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', this.type + '.svg')
+            light: path.join(__filename, '..', '..', 'resources', 'light', this.type + '.svg'),
+            dark: path.join(__filename, '..', '..', 'resources', 'dark', this.type + '.svg')
         }
         // this.description = description
     }

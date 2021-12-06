@@ -156,7 +156,10 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "lint": "eslint src --ext ts",
-        "watch": "tsc -watch -p ./",
+        "esbuild-base": "rimraf out && esbuild ./src/main.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+        "build": "npm run -S esbuild-base -- --sourcemap",
+        "watch": "npm run -S esbuild-base --",
+        "watch2": "tsc -watch -p ./",
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "dependencies": {

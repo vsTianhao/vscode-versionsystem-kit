@@ -3,6 +3,7 @@ import LeftBarViewer from "./views/LeftBarViewer"
 import LoggerFactory from './LoggerFactory'
 import * as GulpCommands from './cmds/GulpCommands'
 import * as OtherCommands from './cmds/OtherCommands'
+import GulpOperate from "./GulpOperate"
 
 export function activate(context: vscode.ExtensionContext): void {
 	const logger = LoggerFactory("main")
@@ -21,5 +22,7 @@ export function activate(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(vscode.commands.registerCommand("vscode-versionsystem-kit.build", GulpCommands.build))
 
 	context.subscriptions.push(vscode.commands.registerCommand("vscode-versionsystem-kit.config", OtherCommands.config))
+
+	GulpOperate()
 
 }

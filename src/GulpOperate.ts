@@ -3,12 +3,12 @@ import del from 'del'
 import globule from 'globule'
 import gulpSass from 'gulp-sass'
 import originSass from 'sass'
-import browserify from 'browserify'
+// import browserify from 'browserify'
 import source from 'vinyl-source-stream'
 import buffer from 'vinyl-buffer'
 import babel from 'gulp-babel'
-import uglify from 'gulp-uglify'
-import babelify from 'babelify'
+// import uglify from 'gulp-uglify'
+// import babelify from 'babelify'
 import path from 'path'
 import change from 'gulp-change'
 import inject from 'gulp-inject'
@@ -31,31 +31,21 @@ import RemoteFile from './types/RemoteFile'
 import CommonFile from './types/CommonFile'
 import Configuration from './Configuration'
 
-const sass = gulpSass(originSass)
-
 export default function (): void {
-
-    const logger = LoggerFactory("task")
+    const logger = LoggerFactory("gulp")
+    logger.info(exec)
+    logger.info(DevServer)
+    logger.info(stable)
+    const sass = gulpSass(originSass)
 
     const cachebust = new CacheBuster()
     const task = gulp.task
     const distDir: string = Configuration("dist") || "./dist"
 
-    const workDir = (): void => {
-        if (Configuration("cwd")) {
-            process.chdir(Configuration("cwd"))
-        }
-    }
-
-    workDir()
-
     task('clean', (done) => {
         process.chdir(path.join(distDir, ".."))
         logger.info("删除:" + distDir)
-        del([distDir], (): void => {
-            workDir()
-            done()
-        })
+        del([distDir], done)
     })
 
     const getCSS = (): NodeJS.ReadableStream => {
@@ -109,10 +99,15 @@ export default function (): void {
             .pipe(gulp.dest(path.join(distDir, '.tmp')))
     })
 
-    const buildCoreJS = (entries, name): NodeJS.ReadableStream => browserify({
+    // const buildCoreJS = (entries, name): NodeJS.ReadableStream => browserify({
+    //     entries,
+    //     paths: ["" + Configuration("appPath")],
+    // }).transform(babelify).bundle()
+    const buildCoreJS = (entries, name): NodeJS.ReadableStream => gulp.src({
         entries,
         paths: ["" + Configuration("appPath")],
-    }).transform(babelify).bundle()
+    // }).transform(babelify).bundle()
+    })
         .pipe(source(name))
         .pipe(buffer())
         .pipe(babel({
@@ -120,7 +115,7 @@ export default function (): void {
             "presets": [babelPresetEnv]
         }))
         .pipe(ngAnnotate())
-        .pipe(uglify()) // TODO uglify
+        // .pipe(uglify()) // TODO uglify
         .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
             logger.info(file.basename + "已经执行完转义，注入，混淆操作")
             done(null, file)

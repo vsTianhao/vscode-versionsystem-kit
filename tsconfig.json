@@ -6,9 +6,10 @@
 		"lib": [
 			"es6"
 		],
-		"sourceMap": true,
-		"rootDir": "src",
+		"sourceMap": false,
+		// "rootDir": "src",
 		// "strict": true,
+		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true
 	},
 	"exclude": [

@@ -18,24 +18,19 @@ import prompt from 'prompt'
 import client from 'scp2'
 import eventStream from 'event-stream'
 import ngAnnotate from 'gulp-ng-annotate'
-import gulpSort from 'gulp-sort'
-import stable from 'stable'
 import tinyLr from 'tiny-lr'
 import templateCache from 'gulp-angular-templatecache'
 import CacheBuster from 'gulp-cachebust'
 import babelPresetEnv from "@babel/preset-env"
-import { exec } from 'child_process'
 import DevServer from './DevServer'
 import LoggerFactory from './LoggerFactory'
 import RemoteFile from './types/RemoteFile'
 import CommonFile from './types/CommonFile'
 import Configuration from './Configuration'
+import GulpSort from './GulpSort'
 
 export default function (): void {
     const logger = LoggerFactory("gulp")
-    logger.info(exec)
-    logger.info(DevServer)
-    logger.info(stable)
     const sass = gulpSass(originSass)
 
     const cachebust = new CacheBuster()
@@ -49,11 +44,14 @@ export default function (): void {
     })
 
     const getCSS = (): NodeJS.ReadableStream => {
-        return gulp.src("./client/app/app.scss")
+        return gulp.src(Configuration("mainCSS"), { cwd: Configuration("cwd") })
             // .pipe(sourcemaps.init())
             .pipe(sass({
-                includePaths: ["./client/bower_components", "./client/components"]
+                includePaths: [
+                    path.join(Configuration("cwd"), "./client/bower_components"),
+                    path.join(Configuration("cwd"), "./client/components")]
             }))
+            .on('error', logger.error)
     }
 
     task('build-css', (): void => {
@@ -103,11 +101,11 @@ export default function (): void {
     //     entries,
     //     paths: ["" + Configuration("appPath")],
     // }).transform(babelify).bundle()
-    const buildCoreJS = (entries, name): NodeJS.ReadableStream => gulp.src({
-        entries,
-        paths: ["" + Configuration("appPath")],
+    // const buildCoreJS = (entries, name): NodeJS.ReadableStream => gulp.src({
+    //     entries,
+    //     paths: ["" + Configuration("appPath")],
     // }).transform(babelify).bundle()
-    })
+    const buildCoreJS = (entries, name): NodeJS.ReadableStream => gulp.src(entries)
         .pipe(source(name))
         .pipe(buffer())
         .pipe(babel({
@@ -237,49 +235,24 @@ export default function (): void {
         uploadDir('i18n')
     })
 
-    const sortFn = (): NodeJS.ReadWriteStream => {
-        return gulpSort({
-            customSortFn(files) {
-                return stable(files, (a, b) => {
-                    const arr1 = path.relative(Configuration("cwd"), a.path).split('').map(e => e.charCodeAt(0))
-                    const arr2 = path.relative(Configuration("cwd"), b.path).split('').map(e => e.charCodeAt(0))
-                    // tslint:disable-next-line:forin
-                    for (const item in arr1) {
-                        if (arr1[item] === 92 && arr2[item] !== 92) {
-                            return -1
-                        }
-                        if (arr1[item] !== 92 && arr2[item] === 92) {
-                            return 1
-                        }
-                        if (arr1[item] === arr2[item]) {
-                            continue
-                        }
-                        return arr1[item] > arr2[item] ? 1 : -1
-                    }
-                    return 1
-                })
-            }
-        })
-    }
-
     task('dev-index-html', (): void => {
-        logger.info("注入 index.html")
-        return gulp.src("client/index.html")
-            .pipe(inject(gulp.src(Configuration("entries"), { read: false }).pipe(sortFn()), {
+        const mainHTML: string = Configuration("frondendMainHTML")
+        const entries: string[] = Configuration("entries")
+        logger.info(`准备向HTML入口"${mainHTML}"进行注入: ${entries}`)
+        return gulp.src(mainHTML, { cwd: Configuration("cwd") })
+            .pipe(inject(gulp.src(entries, { read: false }).pipe(GulpSort()), {
                 starttag: "<!-- injector:js -->",
                 endtag: "<!-- endinjector -->",
                 transform(filepath) {
                     return `<script src="${filepath.replace(/^\/client\//, '')}"></script>`
                 }
-            }))
-            .on('error', logger.error)
-            .pipe(gulp.dest('client'))
+            })).on('error', logger.error).pipe(gulp.dest('client'))
     })
 
     task('dev-app-scss', (): void => {
         logger.info("注入 scss")
-        return gulp.src("client/app/app.scss")
-            .pipe(inject(gulp.src(Configuration("cssMatch"), { read: false }).pipe(sortFn()), {
+        return gulp.src(Configuration("mainCSS"), { cwd: Configuration("cwd") })
+            .pipe(inject(gulp.src(Configuration("cssMatch"), { read: false }).pipe(GulpSort()), {
                 starttag: "// injector",
                 endtag: "// endinjector",
                 transform(filepath) {
@@ -306,7 +279,7 @@ export default function (): void {
             tinyLr.changed(_path)
         })
         gulp.watch(Configuration("cssMatch"), gulp.series('devCSS'))
-        gulp.watch("./client/app/app.scss", gulp.series('devCSS'))
+        gulp.watch(Configuration("mainCSS"), gulp.series('devCSS'))
         gulp.watch("client/app.css").on("change", (_path) => {
             logger.info("CSS已经更新")
             tinyLr.changed(_path)
@@ -315,44 +288,11 @@ export default function (): void {
     })
 
     task('web-server', async () => {
-        gulp.src('./client/')
-            .pipe(await DevServer(tinyLr, {
-                port: Configuration("devServer Port")
-            }))
+        DevServer({
+            host: '127.0.0.1',
+            port: Configuration("devServerPort"),
+            folder: path.join(Configuration("cwd"), "client")
+        }, tinyLr)
     })
 
-    task('app-js', () => {
-        gulp.src(Configuration("mainJS"))
-            .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
-                let content = file.contents.toString()
-                if (~content.indexOf(Configuration("serverURL"))) {
-                    logger.info("当前是服务器IP，将改为本地IP")
-                    content = content.replace(Configuration("serverURL"), Configuration("localURL"))
-                    // content = content.replace("/*comment begin*/", "/*comment begin*/");
-                    exec("git update-index --assume-unchanged " + Configuration("mainJS"))
-                } else if (~content.indexOf(Configuration("localURL"))) {
-                    logger.info("当前是本地IP，将改为服务器IP")
-                    content = content.replace(Configuration("localURL"), Configuration("serverURL"))
-                    // content = content.replace("/*comment begin*/", "/*comment begin*/");
-                    exec("git update-index --no-assume-unchanged " + Configuration("mainJS"))
-                }
-                file.contents = Buffer.from(content)
-                done(null, file)
-            }))
-            .pipe(gulp.dest(Configuration("appPath")))
-    })
-
-    task('dev', gulp.series('dev-index-html', "dev-app-scss", 'devCSS', 'watch', 'web-server'))
-
-    task('default', gulp.series('build'))
-
-    task('test', (done) => {
-        logger.info("vs-kit testing")
-        done()
-    })
-
-    task('json', (done) => {
-        logger.info("未实现")
-        done()
-    })
 }

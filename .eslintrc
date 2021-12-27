@@ -1,21 +1,26 @@
 {
 	"root": true,
 	"extends": [
-		"eslint:recommended", "plugin:@typescript-eslint/recommended"
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended"
 	],
 	"env": {
 		"es6": true,
-		"node": true
+		"node": true,
+		"jest/globals": true
 	},
 	"rules": {
-        "new-parens": 1,
-        "semi": [
-            1,
-            "never"
-        ],
-        "no-consecutive-blank-lines": 0
+		"new-parens": 1,
+		"semi": [
+			1,
+			"never"
+		],
+		"no-consecutive-blank-lines": 0
 	},
 	"parserOptions": {
 		"parser": "@typescript-eslint/parser"
-	}
+	},
+	"plugins": [
+		"jest"
+	]
 }

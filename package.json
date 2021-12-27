@@ -18,17 +18,12 @@
     "main": "./out/main.js",
     "activationEvents": [
         "onView:vskit.views.leftBar",
-        "onCommand:vscode-versionsystem-kit.currentPath",
         "onCommand:vscode-versionsystem-kit.config",
         "onCommand:vscode-versionsystem-kit.build",
         "onCommand:vscode-versionsystem-kit.dev"
     ],
     "contributes": {
         "commands": [
-            {
-                "command": "vscode-versionsystem-kit.currentPath",
-                "title": "Versionsystem Kit: Alert current path"
-            },
             {
                 "command": "vscode-versionsystem-kit.config",
                 "title": "Versionsystem Kit: Show Current Config"
@@ -46,12 +41,12 @@
             "type": "object",
             "title": "VS kit",
             "properties": {
-                "vskit.port": {
+                "vskit.devServerPort": {
                     "type": "number",
                     "default": 9000,
                     "scope": "resource",
                     "minimum": 1,
-                    "description": "开发模式的默认端口号为9000，0到1023之间的端口号要保留给预定义服务，但80/433等端口也是可以使用的"
+                    "description": "开发服务器的默认端口号为9000，0到1023之间的端口号要保留给预定义服务，但80/433等端口也是可以使用的"
                 },
                 "vskit.logLevel": {
                     "type": "string",
@@ -93,6 +88,16 @@
                     "scope": "resource",
                     "description": "主体路径"
                 },
+                "vskit.cwd": {
+                    "type": "string",
+                    "scope": "resource",
+                    "description": "工作目录"
+                },
+                "vskit.dist": {
+                    "type": "string",
+                    "scope": "resource",
+                    "description": "输出目录"
+                },
                 "vskit.mainJS": {
                     "type": "string",
                     "description": "入口JS"
@@ -114,16 +119,24 @@
                     "description": "后台的入口HTML"
                 },
                 "vskit.entries": {
-                    "type": "object",
+                    "type": "array",
                     "description": "所有的主体JS目录，需是一个数组"
                 },
+                "vskit.mainCSS": {
+                    "type": "string",
+                    "description": "核心的css"
+                },
                 "vskit.cssMatch": {
-                    "type": "object",
-                    "description": "所有的CSS目录，需是一个数组"
+                    "type": "array",
+                    "description": "所有的CSS目录，需是一个数组，注入给核心CSS"
                 },
                 "vskit.remoteFiles": {
                     "type": "object",
                     "description": "这是个json"
+                },
+                "vskit.enableSourceMap": {
+                    "type": "boolean",
+                    "description": "是否启用Source Map便于追踪"
                 }
             }
         },
@@ -158,9 +171,9 @@
         "lint": "eslint src --ext ts",
         "esbuild-base": "rimraf out && esbuild ./src/main.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
         "build": "npm run -S esbuild-base -- --sourcemap",
-        "watch": "npm run -S esbuild-base --",
+        "watch": "npm run -S esbuild-base -- --sourcemap",
         "watch2": "tsc -watch -p ./",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+        "test": "npm run compile && jest"
     },
     "dependencies": {
         "@babel/core": "^7.14.6",
@@ -207,13 +220,18 @@
         "@types/glob": "^7.1.1",
         "@types/gulp": "^4.0.9",
         "@types/gulp-sort": "^2.0.0",
-        "@types/mocha": "^7.0.2",
+        "@types/jest": "^27.0.3",
         "@types/node": "^13.13.52",
+        "@types/sass": "^1.43.1",
         "@types/vscode": "^1.62.0",
         "@typescript-eslint/eslint-plugin": "^2.26.0",
         "@typescript-eslint/parser": "^2.26.0",
         "eslint": "^6.8.0",
+        "eslint-plugin-jest": "^25.3.0",
         "glob": "^7.1.6",
+        "jest": "^27.4.5",
+        "ts-jest": "^27.1.1",
+        "ts-node": "^10.4.0",
         "typescript": "^3.9.10"
     }
 }

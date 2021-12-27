@@ -2,14 +2,27 @@ import * as vscode from "vscode"
 import * as log4js from "log4js"
 import Configuration from "./Configuration"
 
+/**
+ * log4js.d.ts 里面没有这个两个类型
+ */
+declare interface LayoutsConfigType {
+	layout: log4js.Layout;
+	timezoneOffset: number;
+}
+declare type LayoutFunction = (le: log4js.LoggingEvent, tz: number) => string;
+declare interface LayoutsType {
+	colouredLayout: LayoutFunction;
+	layout: (type: string, layouts: log4js.Layout) => LayoutFunction;
+}
+
 let isConfigure = false
 const channel: vscode.OutputChannel = vscode.window.createOutputChannel("Versionsystem-Kit")
-
 const defaultLogConfig: log4js.Configuration = {
 	appenders: {
 		vscodeOutput: {
 			type: {
-				configure: function (config, layouts): ((event: log4js.LoggingEvent) => void) {
+				// print to vscode
+				configure: function (config: LayoutsConfigType, layouts: LayoutsType): ((event: log4js.LoggingEvent) => void) {
 					let layout = layouts.colouredLayout
 					if (config.layout) {
 						layout = layouts.layout(config.layout.type, config.layout)
@@ -26,10 +39,10 @@ const defaultLogConfig: log4js.Configuration = {
 			}
 		}
 	},
-	categories: { default: { appenders: ['vscodeOutput'], level: Configuration("logLevel") } }
+	categories: { default: { appenders: ['vscodeOutput'], level: Configuration("logLevel") || "INFO" } }
 }
 
-export default function LoggerFactory(category): log4js.Logger {
+export default function LoggerFactory(category: string): log4js.Logger {
 	if (!isConfigure) {
 		isConfigure = true
 		log4js.configure(defaultLogConfig)

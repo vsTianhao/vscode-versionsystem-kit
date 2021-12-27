@@ -22,7 +22,7 @@ import tinyLr from 'tiny-lr'
 import templateCache from 'gulp-angular-templatecache'
 import CacheBuster from 'gulp-cachebust'
 import babelPresetEnv from "@babel/preset-env"
-import DevServer from './DevServer'
+import { DevServer, DevServerParams } from './DevServer'
 import LoggerFactory from './LoggerFactory'
 import RemoteFile from './types/RemoteFile'
 import CommonFile from './types/CommonFile'
@@ -36,6 +36,7 @@ export default function (): void {
     const cachebust = new CacheBuster()
     const task = gulp.task
     const distDir: string = Configuration("dist") || "./dist"
+    let instanceServer
 
     task('clean', (done) => {
         process.chdir(path.join(distDir, ".."))
@@ -288,11 +289,18 @@ export default function (): void {
     })
 
     task('web-server', async () => {
-        DevServer({
+        const config: DevServerParams = {
             host: '127.0.0.1',
             port: Configuration("devServerPort"),
             folder: path.join(Configuration("cwd"), "client")
-        }, tinyLr)
+        }
+        instanceServer = await DevServer(config, tinyLr)
+        logger.info("前端服务器启动完成: http://" + config.host + ":" + config.port)
+    })
+
+    task('close-web-server', async () => {
+        await instanceServer.close()
+        logger.info("前端服务器已经关闭")
     })
 
 }

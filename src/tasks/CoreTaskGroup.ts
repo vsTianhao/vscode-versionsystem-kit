@@ -10,7 +10,7 @@ export default function (): TaskItemBtn[] {
         build: '构建',
         run: '运行',
         upload: '上传',
-        other: "其他"
+        others: "其他"
     }))
 
     const groupBtns: TaskItemBtn[] = new Array(coreTaskGroups.size)

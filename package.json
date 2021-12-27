@@ -18,14 +18,14 @@
     "main": "./out/main.js",
     "activationEvents": [
         "onView:vskit.views.leftBar",
-        "onCommand:vscode-versionsystem-kit.config",
+        "onCommand:vscode-versionsystem-kit.dev",
         "onCommand:vscode-versionsystem-kit.build",
-        "onCommand:vscode-versionsystem-kit.dev"
+        "onCommand:vscode-versionsystem-kit.others"
     ],
     "contributes": {
         "commands": [
             {
-                "command": "vscode-versionsystem-kit.config",
+                "command": "vscode-versionsystem-kit.others",
                 "title": "Versionsystem Kit: Show Current Config"
             },
             {

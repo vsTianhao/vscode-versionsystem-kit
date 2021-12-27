@@ -3,13 +3,13 @@ import * as path from "path"
 import LeftBarViewer from "./views/LeftBarViewer"
 import LoggerFactory from './LoggerFactory'
 import * as GulpCommands from './cmds/GulpCommands'
-import * as OtherCommands from './cmds/OtherCommands'
+import OtherCommands from './cmds/OtherCommands'
 import GulpOperate from "./GulpOperate"
 
 export function activate(context: vscode.ExtensionContext): void {
 	const logger = LoggerFactory("main")
 
-	logger.info('Extension "vscode-versionsystem-kit" is active')
+	logger.info('扩展"vscode-versionsystem-kit"已激活')
 
 	context.subscriptions.push(vscode.window.registerTreeDataProvider("vskit.views.leftBar", new LeftBarViewer()))
 
@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	context.subscriptions.push(vscode.commands.registerCommand("vscode-versionsystem-kit.build", GulpCommands.build))
 
-	context.subscriptions.push(vscode.commands.registerCommand("vscode-versionsystem-kit.config", OtherCommands.config))
+	context.subscriptions.push(vscode.commands.registerCommand("vscode-versionsystem-kit.others", OtherCommands))
 
 	GulpOperate()
 

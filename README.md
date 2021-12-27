@@ -1,65 +1,29 @@
 # vscode-versionsystem-kit README
 
-This is the README for your extension "vscode-versionsystem-kit". After writing up a brief description, we recommend including the following sections.
+versionsystem在vscode中的开发工具
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- 开发服务器，就像grunt serve，当然这个没有用到grunt，这是用gulp的
+- 编译打包 (暂时没好)
+- 上传到服务器 (暂时没好)
+- 让服务器打包 (暂时没好)
+- kendo template高亮语法识别 (有些DOM可能不行) (暂时没好)
+- angularjs指令的高亮跳转 (我们的AST很复杂，也许做不了)
+- 其他考虑的...
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+有十几项配置应该设置在VSCode全局的setting.json中，例如appPath，有几项特别的可以设置在项目目录的.vscode/setting.json中，例如devServerPort
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+可以查阅`package.json`中的`contributes.configuration`
 
-For example:
+下面只列出几项
 
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+* `vskit.devServerPort`: 前端开发服务器的端口号
+* `vskit.logLevel`: 本插件的日志等级
+* `vskit.logPattern`: 日志打印的格式
 
 **Enjoy!**

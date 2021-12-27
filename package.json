@@ -2,8 +2,11 @@
     "name": "vscode-versionsystem-kit",
     "displayName": "Versionsystem kit",
     "description": "versionsystem kit",
-    "publisher": "vsTianhao",
-    "version": "0.0.1",
+    "publisher": "vs-kit",
+    "version": "0.0.2",
+    "author": {
+        "name": "lyrieek"
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/vsTianhao/vscode-versionsystem-kit.git"
@@ -15,6 +18,7 @@
         "Snippets",
         "Other"
     ],
+    "icon": "resources/logo128x128.png",
     "main": "./out/main.js",
     "activationEvents": [
         "onView:vskit.views.leftBar",

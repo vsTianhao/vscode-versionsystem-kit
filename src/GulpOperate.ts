@@ -31,7 +31,6 @@ import GulpSort from './GulpSort'
 
 export default function (): void {
     const logger = LoggerFactory("gulp")
-    const sass = gulpSass(originSass)
 
     const cachebust = new CacheBuster()
     const task = gulp.task
@@ -47,7 +46,7 @@ export default function (): void {
     const getCSS = (): NodeJS.ReadableStream => {
         return gulp.src(Configuration("mainCSS"), { cwd: Configuration("cwd") })
             // .pipe(sourcemaps.init())
-            .pipe(sass({
+            .pipe(gulpSass(originSass)({
                 includePaths: [
                     path.join(Configuration("cwd"), "./client/bower_components"),
                     path.join(Configuration("cwd"), "./client/components")]
@@ -250,7 +249,7 @@ export default function (): void {
             })).on('error', logger.error).pipe(gulp.dest('client'))
     })
 
-    task('dev-app-scss', (): void => {
+    task('change-css-files', (): void => {
         logger.info("注入 scss")
         return gulp.src(Configuration("mainCSS"), { cwd: Configuration("cwd") })
             .pipe(inject(gulp.src(Configuration("cssMatch"), { read: false }).pipe(GulpSort()), {
@@ -272,8 +271,8 @@ export default function (): void {
     task('watch', (done) => {
         gulp.watch(Configuration("entries")).on('add', gulp.series('dev-index-html'))
         gulp.watch(Configuration("entries")).on('unlink', gulp.series('dev-index-html'))
-        gulp.watch(Configuration("cssMatch")).on('add', gulp.series('dev-app-scss'))
-        gulp.watch(Configuration("cssMatch")).on('unlink', gulp.series('dev-app-scss'))
+        gulp.watch(Configuration("cssMatch")).on('add', gulp.series('change-css-files'))
+        gulp.watch(Configuration("cssMatch")).on('unlink', gulp.series('change-css-files'))
         const entries: string[] = Configuration("entries")
         gulp.watch(entries.concat([Configuration("appHTML"), Configuration("componentsHTML"), Configuration("mainJS")])).on('change', (_path) => {
             logger.info("文件修改已知会:" + _path)

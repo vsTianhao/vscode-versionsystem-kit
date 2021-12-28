@@ -26,7 +26,7 @@ export async function run(type = "dev"): Promise<void> {
                 return
             }
             serverEstablished = true
-            await gulp.series('dev-index-html', "dev-app-scss", 'devCSS', 'watch', 'web-server')(void 0)
+            await gulp.series('dev-index-html', "change-css-files", 'devCSS', 'watch', 'web-server')(void 0)
         } else if (type === "shutdown") {
             logger.info("准备关闭开发服务器")
             serverEstablished = false

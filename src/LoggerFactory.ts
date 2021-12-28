@@ -31,6 +31,7 @@ const defaultLogConfig: log4js.Configuration = {
 						channel.appendLine(`${layout(loggingEvent, config.timezoneOffset)}\n`)
 						if (loggingEvent.level.levelStr === "ERROR") {
 							vscode.window.showErrorMessage(loggingEvent.data[0])
+							channel.show()
 						}
 					}
 				}

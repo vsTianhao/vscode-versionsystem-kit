@@ -20,7 +20,7 @@ import eventStream from 'event-stream'
 import ngAnnotate from 'gulp-ng-annotate'
 import tinyLr from 'tiny-lr'
 import templateCache from 'gulp-angular-templatecache'
-import CacheBuster from 'gulp-cachebust'
+import CacheBuster from 'gulp-cachebust'//这个应该不需要了
 import babelPresetEnv from "@babel/preset-env"
 import { DevServer, DevServerParams } from './DevServer'
 import LoggerFactory from './LoggerFactory'
@@ -299,7 +299,7 @@ export default function (): void {
 
     task('close-web-server', async () => {
         await instanceServer.close()
-        logger.info("前端服务器已经关闭")
+        logger.info("前端开发服务器已经关闭")
     })
 
 }

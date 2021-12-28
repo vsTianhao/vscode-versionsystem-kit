@@ -3,13 +3,13 @@
     "displayName": "Versionsystem kit",
     "description": "versionsystem kit",
     "publisher": "vs-kit",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "author": {
         "name": "lyrieek"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/vsTianhao/vscode-versionsystem-kit.git"
+        "url": "https://github.com/vsTianhao/vscode-versionsystem-kit.git"
     },
     "engines": {
         "vscode": "^1.62.0"
@@ -171,7 +171,8 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
+        "compile": "npm run -S esbuild-base",
+        "compile2": "tsc -p ./",
         "lint": "eslint src --ext ts",
         "esbuild-base": "rimraf out && esbuild ./src/main.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
         "build": "npm run -S esbuild-base -- --sourcemap",
@@ -190,6 +191,7 @@
         "del": "^1.1.1",
         "event-stream": "^4.0.1",
         "fastify": "^3.19.2",
+        "globule": "^1.3.3",
         "gulp": "^4.0.2",
         "gulp-angular-templatecache": "^3.0.0",
         "gulp-babel": "^8.0.0",
@@ -205,7 +207,6 @@
         "gulp-uglify": "^1.1.0",
         "log4js": "^6.3.0",
         "middie": "^5.3.0",
-        "node-sass": "^6.0.1",
         "prompt": "^1.1.0",
         "sass": "^1.18.0",
         "scp2": "^0.5.0",

@@ -2,3 +2,8 @@
 .gitignore
 node_modules/
 .git/
+tests/
+**/*.map
+jest.config.ts
+src/
+heed.txt

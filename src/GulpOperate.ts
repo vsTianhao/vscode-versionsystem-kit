@@ -21,7 +21,7 @@ import ngAnnotate from 'gulp-ng-annotate'
 import templateCache from 'gulp-angular-templatecache'
 import CacheBuster from 'gulp-cachebust'//这个应该不需要了
 import babelPresetEnv from "@babel/preset-env"
-import { DevServer, DevServerParams } from './DevServer'
+import { DevServer, DevServerParams } from './servers/DevServer'
 import LoggerFactory from './LoggerFactory'
 import RemoteFile from './types/RemoteFile'
 import CommonFile from './types/CommonFile'

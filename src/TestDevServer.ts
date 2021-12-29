@@ -1,6 +1,6 @@
 import tinyLr from 'tiny-lr'
 import path from 'path'
-import { DevServer, DevServerParams } from './DevServer'
+import { DevServer, DevServerParams } from './servers/DevServer'
 import prompt from 'prompt'
 
 const server = (async function (): Promise<void> {

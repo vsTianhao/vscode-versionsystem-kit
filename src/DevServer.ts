@@ -1,8 +1,10 @@
 import serveStatic from 'serve-static'
 import connectLivereload from 'connect-livereload'
 import connect from 'connect'
+import ChangeSignalServer from './servers/ChangeSignalServer'
 import { fastify, FastifyInstance } from 'fastify'
 import Middie from 'middie'
+import LoggerFactory from './LoggerFactory'
 
 export interface DevServerParams {
 	host: string;//开发服务器的地址，一般是'127.0.0.1'或'0.0.0.0'
@@ -10,28 +12,49 @@ export interface DevServerParams {
 	folder: string;//服务器的文件夹
 }
 
-export async function DevServer(config: DevServerParams, tinyLr): Promise<FastifyInstance> {
+/**
+ * 前端开发服务器的具体实现
+ */
+export class DevServer {
 
-	const app = fastify({
-		logger: false
-	})
+	private changeSignalServer: ChangeSignalServer;
+	private app: FastifyInstance;
+	private config: DevServerParams;
+    private logger = LoggerFactory("dev-server")
 
-	await app.register(Middie)
+	constructor(config: DevServerParams) {
+		this.app = fastify({
+			logger: false
+		})
+		this.changeSignalServer = new ChangeSignalServer()
+		this.config = config
+	}
 
-	// https://github.com/mklabs/tiny-lr/blob/907f6b6b04ff42f06d58b972107be4a5d5bd7ead/lib/server.js#L86
-	// 35729是标准Livereload端口
-	const tinyLrServer = tinyLr()
-	tinyLrServer.listen(35729, config.host)
-	app.use(connectLivereload({ port: 35729 }) as connect.SimpleHandleFunction)
+	async load(): Promise<void> {
+		await this.app.register(Middie)
 
-	app.listen(config.port, config.host)
+		// http://livereload.com/tips/change-port-number-livereload-listens-on/
+		// 35729是标准Livereload端口
+		this.changeSignalServer.listen(35729, this.config.host)
+		this.app.use(connectLivereload({ port: 35729 }) as connect.SimpleHandleFunction)
 
-	app.use("/", serveStatic(config.folder))
-	app.use(tinyLr.middleware({ app }))
+		this.app.listen(this.config.port, this.config.host)
 
-	app.addHook('onClose', async () => {
-		tinyLrServer.close()
-	})
+		this.app.use("/", serveStatic(this.config.folder))
 
-	return app
+		this.app.addHook('onClose', async () => {
+			this.changeSignalServer.close()
+			this.logger.info("35729 信号服务器伴随前端开发服务器停止")
+		})
+	}
+
+	async close(): Promise<void> {
+		await this.app.close()
+        this.logger.info("前端开发服务器已停止")
+	}
+
+	changed(path: string): void {
+		this.changeSignalServer.changed(path)
+	}
+
 }

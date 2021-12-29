@@ -18,7 +18,6 @@ import prompt from 'prompt'
 import client from 'scp2'
 import eventStream from 'event-stream'
 import ngAnnotate from 'gulp-ng-annotate'
-import tinyLr from 'tiny-lr'
 import templateCache from 'gulp-angular-templatecache'
 import CacheBuster from 'gulp-cachebust'//这个应该不需要了
 import babelPresetEnv from "@babel/preset-env"
@@ -35,7 +34,7 @@ export default function (): void {
     const cachebust = new CacheBuster()
     const task = gulp.task
     const distDir: string = Configuration("dist") || "./dist"
-    let instanceServer
+    let instanceServer: DevServer
 
     task('clean', (done) => {
         process.chdir(path.join(distDir, ".."))
@@ -269,20 +268,20 @@ export default function (): void {
     })
 
     task('watch', (done) => {
+        const entries: string[] = Configuration("entries")
         gulp.watch(Configuration("entries")).on('add', gulp.series('dev-index-html'))
         gulp.watch(Configuration("entries")).on('unlink', gulp.series('dev-index-html'))
         gulp.watch(Configuration("cssMatch")).on('add', gulp.series('change-css-files'))
         gulp.watch(Configuration("cssMatch")).on('unlink', gulp.series('change-css-files'))
-        const entries: string[] = Configuration("entries")
-        gulp.watch(entries.concat([Configuration("appHTML"), Configuration("componentsHTML"), Configuration("mainJS")])).on('change', (_path) => {
+        gulp.watch(entries.concat([Configuration("frondendMainHTML"), Configuration("appHTML"), Configuration("componentsHTML"), Configuration("mainJS")])).on('change', (_path) => {
             logger.info("文件修改已知会:" + _path)
-            tinyLr.changed(_path)
+            instanceServer.changed(_path)
         })
         gulp.watch(Configuration("cssMatch"), gulp.series('devCSS'))
         gulp.watch(Configuration("mainCSS"), gulp.series('devCSS'))
         gulp.watch("client/app.css").on("change", (_path) => {
             logger.info("CSS已经更新")
-            tinyLr.changed(_path)
+            instanceServer.changed(_path)
         })
         return done()
     })
@@ -293,13 +292,14 @@ export default function (): void {
             port: Configuration("devServerPort"),
             folder: path.join(Configuration("cwd"), "client")
         }
-        instanceServer = await DevServer(config, tinyLr)
-        logger.info("前端服务器启动完成: http://" + config.host + ":" + config.port)
+        instanceServer = new DevServer(config)
+        await instanceServer.load()
+        logger.info("前端开发服务器启动成功: http://" + config.host + ":" + config.port)
+        logger.info("完毕")
     })
 
     task('close-web-server', async () => {
         await instanceServer.close()
-        logger.info("前端开发服务器已经关闭")
     })
 
 }

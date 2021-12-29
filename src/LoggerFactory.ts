@@ -32,6 +32,8 @@ const defaultLogConfig: log4js.Configuration = {
 						if (loggingEvent.level.levelStr === "ERROR") {
 							vscode.window.showErrorMessage(loggingEvent.data[0])
 							channel.show()
+						} else if (loggingEvent.level.levelStr === "INFO" && loggingEvent.data[0] === "完毕") {
+							channel.show()
 						}
 					}
 				}

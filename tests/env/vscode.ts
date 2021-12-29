@@ -17,10 +17,16 @@ module.exports = {
 		showInformationMessage(text: string): void {
 			console.log(`showInformationMessage: ${text}`)
 		},
+		showErrorMessage(text: string): void {
+			console.error(`showInformationMessage: ${text}`)
+		},
 		createOutputChannel(channelName: string): unknown {
 			return {
 				appendLine(text: string): void {
 					console.log(`vscode channel: [${channelName}] ${text}`)
+				},
+				show(): void {
+					//noop
 				}
 			}
 		}

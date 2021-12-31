@@ -25,9 +25,11 @@ export function activate(context: vscode.ExtensionContext): void {
 			logger.fatal('已经拒绝初始化')
 			return
 		}
-		vscode.workspace.getConfiguration("vskit").update("projectName", vscode.workspace.name)
 		vscode.workspace.getConfiguration("vskit").update("cwd", vscode.workspace.rootPath)
 		vscode.workspace.getConfiguration("vskit").update("dist", path.join(vscode.workspace.rootPath, 'dist'))
+		if (!vscode.workspace.getConfiguration("vskit").get("projectName")) {
+			vscode.workspace.getConfiguration("vskit").update("projectName", vscode.workspace.name)
+		}
 		GulpOperate()
 	}))
 

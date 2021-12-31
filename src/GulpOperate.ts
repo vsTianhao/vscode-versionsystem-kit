@@ -1,8 +1,6 @@
 import gulp from 'gulp'
 import del from 'del'
 import globule from 'globule'
-import gulpSass from 'gulp-sass'
-import originSass from 'sass'
 // import browserify from 'browserify'
 import source from 'vinyl-source-stream'
 import buffer from 'vinyl-buffer'
@@ -21,12 +19,12 @@ import ngAnnotate from 'gulp-ng-annotate'
 import templateCache from 'gulp-angular-templatecache'
 import CacheBuster from 'gulp-cachebust'//这个应该不需要了
 import babelPresetEnv from "@babel/preset-env"
-import { DevServer, DevServerParams } from './servers/DevServer'
 import LoggerFactory from './LoggerFactory'
 import RemoteFile from './types/RemoteFile'
 import CommonFile from './types/CommonFile'
+import CSSLoader from './measure/CSSLoader'
 import Configuration from './Configuration'
-import GulpSort from './GulpSort'
+import ServerBootstrap from './servers/ServerBootstrap'
 
 export default function (): void {
     const logger = LoggerFactory("gulp")
@@ -34,7 +32,8 @@ export default function (): void {
     const cachebust = new CacheBuster()
     const task = gulp.task
     const distDir: string = Configuration("dist") || "./dist"
-    let instanceServer: DevServer
+
+    ServerBootstrap()
 
     task('clean', (done) => {
         process.chdir(path.join(distDir, ".."))
@@ -42,22 +41,9 @@ export default function (): void {
         del([distDir], done)
     })
 
-    const getCSS = (): NodeJS.ReadableStream => {
-        return gulp.src(Configuration("mainCSS"), { cwd: Configuration("cwd") })
-            // .pipe(sourcemaps.init())
-            .pipe(gulpSass(originSass)({
-                includePaths: [
-                    path.join(Configuration("cwd"), "./client/bower_components"),
-                    path.join(Configuration("cwd"), "./client/components")]
-            }))
-            .on('error', logger.error)
-    }
-
     task('build-css', (): void => {
         logger.info("开始编译SASS")
-        return getCSS()
-            // .pipe(sourcemaps.write('./maps'))
-            .pipe(concat("app.css"))
+        return CSSLoader()
             .pipe(cleanCss())
             .pipe(change((content) => {
                 return content.replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
@@ -232,74 +218,6 @@ export default function (): void {
 
     task('upload-i18n', () => {
         uploadDir('i18n')
-    })
-
-    task('dev-index-html', (): void => {
-        const mainHTML: string = Configuration("frondendMainHTML")
-        const entries: string[] = Configuration("entries")
-        logger.info(`准备向HTML入口"${mainHTML}"进行注入: ${entries}`)
-        return gulp.src(mainHTML, { cwd: Configuration("cwd") })
-            .pipe(inject(gulp.src(entries, { read: false }).pipe(GulpSort()), {
-                starttag: "<!-- injector:js -->",
-                endtag: "<!-- endinjector -->",
-                transform(filepath) {
-                    return `<script src="${filepath.replace(/^\/client\//, '')}"></script>`
-                }
-            })).on('error', logger.error).pipe(gulp.dest('client'))
-    })
-
-    task('change-css-files', (): void => {
-        logger.info("注入 scss")
-        return gulp.src(Configuration("mainCSS"), { cwd: Configuration("cwd") })
-            .pipe(inject(gulp.src(Configuration("cssMatch"), { read: false }).pipe(GulpSort()), {
-                starttag: "// injector",
-                endtag: "// endinjector",
-                transform(filepath) {
-                    return `@import '${filepath.replace(/^\/client\/app\//, '').replace(/^\/client\/components\//, '')}';`
-                }
-            }))
-            .on('error', logger.error)
-            .pipe(gulp.dest('client/app'))
-    })
-
-    task('devCSS', (): void => {
-        logger.info("生成 app/app.css")
-        return getCSS().pipe(concat("app.css")).pipe(gulp.dest("client/app/"))
-    })
-
-    task('watch', (done) => {
-        const entries: string[] = Configuration("entries")
-        gulp.watch(Configuration("entries")).on('add', gulp.series('dev-index-html'))
-        gulp.watch(Configuration("entries")).on('unlink', gulp.series('dev-index-html'))
-        gulp.watch(Configuration("cssMatch")).on('add', gulp.series('change-css-files'))
-        gulp.watch(Configuration("cssMatch")).on('unlink', gulp.series('change-css-files'))
-        gulp.watch(entries.concat([Configuration("frondendMainHTML"), Configuration("appHTML"), Configuration("componentsHTML"), Configuration("mainJS")])).on('change', (_path) => {
-            logger.info("文件修改已知会:" + _path)
-            instanceServer.changed(_path)
-        })
-        gulp.watch(Configuration("cssMatch"), gulp.series('devCSS'))
-        gulp.watch(Configuration("mainCSS"), gulp.series('devCSS'))
-        gulp.watch("client/app.css").on("change", (_path) => {
-            logger.info("CSS已经更新")
-            instanceServer.changed(_path)
-        })
-        return done()
-    })
-
-    task('web-server', async () => {
-        const config: DevServerParams = {
-            host: '127.0.0.1',
-            port: Configuration("devServerPort"),
-            folder: path.join(Configuration("cwd"), "client")
-        }
-        instanceServer = new DevServer(config)
-        await instanceServer.load()
-        logger.info("前端开发服务器启动成功: http://" + config.host + ":" + config.port)
-        logger.info("完毕")
-    })
-
-    task('close-web-server', async () => {
-        await instanceServer.close()
     })
 
 }

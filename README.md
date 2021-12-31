@@ -14,6 +14,15 @@ versionsystem在vscode中的开发工具
 
 ## Requirements
 
+必须要先安装好`sass@1.18.0` (dart2js 2.2.0)，确认安装成功后查询sass版本
+``` bash
+sass --version
+```
+应该输出
+``` log
+1.18.0 compiled with dart2js 2.2.0
+```
+
 有十几项配置应该设置在VSCode全局的setting.json中，例如appPath，有几项特别的可以设置在项目目录的.vscode/setting.json中，例如devServerPort
 
 ## Extension Settings

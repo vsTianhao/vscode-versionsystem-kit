@@ -8,7 +8,7 @@ export default function (): TaskItemBtn[] {
 
     const coreTaskGroups = new Map(Object.entries({
         build: '构建',
-        run: '运行',
+        run: '服务器',
         upload: '上传',
         others: "其他"
     }))

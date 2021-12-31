@@ -92,6 +92,11 @@
                     "scope": "resource",
                     "description": "angularjs的模块名"
                 },
+                "vskit.rootPath": {
+                    "type": "string",
+                    "scope": "resource",
+                    "description": "index的根目录"
+                },
                 "vskit.appPath": {
                     "type": "string",
                     "scope": "resource",
@@ -134,6 +139,10 @@
                 "vskit.mainCSS": {
                     "type": "string",
                     "description": "核心的css"
+                },
+                "vskit.integratedCSS": {
+                    "type": "string",
+                    "description": "集成的css"
                 },
                 "vskit.cssMatch": {
                     "type": "array",
@@ -207,7 +216,6 @@
         "gulp-concat": "^2.5.2",
         "gulp-inject": "^5.0.5",
         "gulp-ng-annotate": "^2.1.0",
-        "gulp-sass": "^5.0.0",
         "gulp-sort": "^2.0.0",
         "gulp-sourcemaps": "^1.5.1",
         "gulp-uglify": "^1.1.0",
@@ -216,7 +224,7 @@
         "middie": "^5.3.0",
         "object-assign": "^4.1.1",
         "prompt": "^1.1.0",
-        "sass": "^1.18.0",
+        "sass": "^1.12.0",
         "scp2": "^0.5.0",
         "serve-static": "^1.14.1",
         "stable": "^0.1.8",

@@ -36,6 +36,7 @@ export class DevServer {
 		// http://livereload.com/tips/change-port-number-livereload-listens-on/
 		// 35729是标准Livereload端口
 		this.changeSignalServer.listen(35729, this.config.host)
+		this.logger.info("35729 信号服务器已启动")
 		this.app.use(connectLivereload({ port: 35729 }) as connect.SimpleHandleFunction)
 
 		this.app.listen(this.config.port, this.config.host)

@@ -1,29 +1,50 @@
 import gulp from 'gulp'
 import fs from 'fs'
+import path from 'path'
 import Configuration from '../Configuration'
 import LoggerFactory from '../LoggerFactory'
 import GulpSort from '../GulpSort'
 
-const logger = LoggerFactory("gulp-wrapper")
-export function srcLoad(pathKey: string): NodeJS.ReadWriteStream {
-    return gulp.src(Configuration(pathKey), { cwd: Configuration("cwd") })
-        .on('error', logger.error)
-}
+export default class GulpWrapper {
 
-export function folderScan(pathKey: string): NodeJS.ReadWriteStream {
-    return gulp.src(Configuration(pathKey), { cwd: Configuration("cwd"), read: false })
-        .pipe(GulpSort())
-        .on('error', logger.error)
-}
+    private getGulpOptions = (): { cwd: string } => ({ cwd: path.join(Configuration("cwd"), Configuration("rootPath")) })
+    private watchArray: fs.FSWatcher[] = Array<fs.FSWatcher>()
+    private logger = LoggerFactory("gulp-wrapper")
 
-export function destDir(pathKey: string): NodeJS.ReadWriteStream {
-    return gulp.dest(Configuration(pathKey), { cwd: Configuration("cwd") })
-        .on('error', logger.error)
-}
-
-export function watchFiles(pathKeyOrFiles: gulp.Globs): fs.FSWatcher {
-    if (pathKeyOrFiles instanceof Array) {
-        return gulp.watch(pathKeyOrFiles, { cwd: Configuration("cwd") } as gulp.WatchOptions)
+    srcLoad(pathKey: string): NodeJS.ReadWriteStream {
+        return gulp.src(Configuration(pathKey), this.getGulpOptions())
+            .on('error', this.logger.error)
     }
-    return gulp.watch(Configuration(pathKeyOrFiles + ""), { cwd: Configuration("cwd") } as gulp.WatchOptions)
+
+    folderScan(pathKey: string): NodeJS.ReadWriteStream {
+        return gulp.src(Configuration(pathKey), { cwd: path.join(Configuration("cwd"), Configuration("rootPath")), read: false })
+            .pipe(GulpSort())
+            .on('error', this.logger.error)
+    }
+
+    destDir(pathKey: string): NodeJS.ReadWriteStream {
+        return gulp.dest(Configuration(pathKey), { cwd: Configuration("cwd") })
+            .on('error', this.logger.error)
+    }
+
+    watchFiles(pathKeyOrFiles: gulp.Globs): fs.FSWatcher {
+        let searchGlobs
+        if (pathKeyOrFiles instanceof Array) {
+            searchGlobs = pathKeyOrFiles
+        } else {
+            searchGlobs = Configuration(pathKeyOrFiles + "")
+        }
+        const watcherObj = gulp.watch(searchGlobs, this.getGulpOptions() as gulp.WatchOptions)
+        this.watchArray.push(watcherObj)
+        return watcherObj
+    }
+
+    closeWatchs(): Integer {
+        for (const watchItem of this.watchArray) {
+            watchItem.close()
+        }
+        const size = this.watchArray.length
+        this.watchArray.length = 0
+        return size
+    }
 }

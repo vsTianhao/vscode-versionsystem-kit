@@ -14,7 +14,7 @@ const taskBeforeValidateFn = (): boolean => {
         logger.error("没有开发端口号，是否在项目下的./.vscode目录中缺少配置？也可以配置成全局的，请查看当前环境的配置")
         return true
     }
-    if (!Configuration("appPath")) {
+    if (!Configuration("mainJS")) {
         logger.error("在VSCode的settings中必须要有完整的配置，目前大概有十几项，那些配置是必备的")
         return true
     }
@@ -43,7 +43,7 @@ export async function run(type = "dev"): Promise<void> {
             await gulp.series('dev-index-html', "change-css-files", 'dev-css', 'watch', 'web-server')(void 0)
         } else if (type === "shutdown") {
             if (!serverEstablished) {
-                logger.warn("前端开发服务器标记已关闭")
+                logger.warn("前端开发服务器标记为已关闭状态")
                 return
             }
             logger.info("准备关闭前端开发服务器")

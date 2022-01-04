@@ -3,11 +3,12 @@ import path from 'path'
 import concat from "gulp-concat"
 import eventStream from 'event-stream'
 import Configuration from '../Configuration'
-import { srcLoad } from '../core/GulpWrapper'
+import GulpWrapper from '../core/GulpWrapper'
 import CommonFile from '../types/CommonFile'
 import LoggerFactory from '../LoggerFactory'
 
 const logger = LoggerFactory("css-loader")
+const gw = new GulpWrapper()
 const gulpSass = (opts): eventStream.MapStream => {
     return eventStream.map((file, done) => {
         if (file.isNull()) {
@@ -41,7 +42,7 @@ const gulpSass = (opts): eventStream.MapStream => {
 }
 
 export default function (): NodeJS.ReadableStream {
-    return srcLoad("mainCSS")
+    return gw.srcLoad("mainCSS")
         .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
             console.log("css: " + file.basename)
             done(null, file)

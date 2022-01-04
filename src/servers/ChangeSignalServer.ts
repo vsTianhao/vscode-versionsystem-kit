@@ -1,12 +1,13 @@
 import fs from 'fs'
 import http from 'http'
 import events from 'events'
+import path from 'path'
 import { parse } from 'url'
 // import anybody from 'body/any'
 // import qs from 'qs'
 // import livereloadService from 'livereload-js'
 import WebSocket from 'faye-websocket'
-import objectAssign from 'object-assign'
+// import objectAssign from 'object-assign'
 
 const CONTENT_TYPE = 'content-type'
 const FORM_TYPE = 'application/x-www-form-urlencoded'
@@ -27,12 +28,11 @@ class Client extends events.EventEmitter {
         this.id = 'ws' + Math.random()
     }
 
-    close(event): void {
+    close(): void {
         if (this.ws) {
             this.ws.close()
             this.ws = null
         }
-        this.emit('end', event)
     }
 
     // info(data): void {
@@ -74,19 +74,23 @@ class Client extends events.EventEmitter {
 /**
  * 传递修改信号的服务器
  */
-export default class extends events.EventEmitter {
+export default class ChangeSignalServer extends events.EventEmitter {
 
     private server: http.Server;
     private rootPath: string;
-    private clients: unknown;
+    private clients: Map<string, Client>;
 
     constructor() {
         super()
         this.rootPath = "/"
-        this.clients = {}
+        this.clients = new Map()
         this.server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse): void => {
             // const next = this.defaultHandler.bind(this, res)
             req.headers[CONTENT_TYPE] = req.headers[CONTENT_TYPE] || FORM_TYPE
+            if (req.url.startsWith("/livereload.js")) {
+
+                fs.createReadStream(path.join(__filename, '..', '..', 'resources/js/livereload.js')).pipe(res)
+            }
             // anybody(req, res, (err, body) => {
             //     if (err) return next(err)
             //     req.body = body
@@ -155,8 +159,8 @@ export default class extends events.EventEmitter {
     }
 
     websocketify(req, socket, head): void {
-        const client = new Client(req, socket, head)
-        this.clients[client.id] = client
+        const client: Client = new Client(req, socket, head)
+        this.clients.set(client.id, client)
         socket.on('error', (e) => {
             if (e.code === 'ECONNRESET') return
             this.error(e)
@@ -169,14 +173,14 @@ export default class extends events.EventEmitter {
         client.once('end', () => {
             // this.emit('MSG /destroy', client.id, client.url)
             this.emit('MSG /destroy', client.id)
-            delete this.clients[client.id]
+            this.clients.delete(client.id)
         })
     }
 
     close(): void {
-        Object.keys(this.clients).forEach(function (id) {
-            this.clients[id].close()
-        }, this)
+        for (const client of this.clients.values()) {
+            client.close()
+        }
         this.server.close()
     }
 
@@ -193,14 +197,9 @@ export default class extends events.EventEmitter {
     }
 
     changed(path: string): void {
-        Object.keys(this.clients).map(function (id) {
-            const client = this.clients[id]
+        for (const client of this.clients.values()) {
             client.reload(path)
-            return {
-                id: client.id,
-                url: client.url
-            }
-        }, this)
+        }
     }
 
     param(name, req): void {

@@ -3,10 +3,6 @@ import http from 'http'
 import events from 'events'
 import path from 'path'
 import { parse } from 'url'
-// import anybody from 'body/any'
-// import qs from 'qs'
-// import livereloadService from 'livereload-js'
-// import objectAssign from 'object-assign'
 import WebSocket from 'faye-websocket'
 import LoggerFactory from '../LoggerFactory'
 
@@ -108,17 +104,6 @@ export default class ChangeSignalServer extends events.EventEmitter {
 
                 fs.createReadStream(path.join(__filename, '..', '..', 'resources/js/livereload.js')).pipe(res)
             }
-            // anybody(req, res, (err, body) => {
-            //     if (err) return next(err)
-            //     req.body = body
-            //     if (!req.query) {
-            //         req.query = req.url.indexOf('?') !== -1
-            //             ? qs.parse(parse(req.url).query)
-            //             : {}
-            //     }
-
-            //     return this.handle(req, res, next)
-            // })
         })
         this.server.on('upgrade', this.websocketify.bind(this))
         this.server.on('error', function (err) {
@@ -210,6 +195,14 @@ export default class ChangeSignalServer extends events.EventEmitter {
         for (const clientItem of this.clients.values()) {
             clientItem.reload(_path)
         }
+    }
+
+    getClientIDs(): string[] {
+        const ret: string[] = new Array<string>()
+        for (const clientID of this.clients.keys()) {
+            ret.push(clientID)
+        }
+        return ret
     }
 
     param(name, req): void {

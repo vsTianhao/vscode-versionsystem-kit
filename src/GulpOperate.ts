@@ -24,7 +24,7 @@ import RemoteFile from './types/RemoteFile'
 import CommonFile from './types/CommonFile'
 import CSSLoader from './measure/CSSLoader'
 import Configuration from './Configuration'
-import ServerBootstrap from './servers/ServerBootstrap'
+import ServerPreparation from './servers/ServerPreparation'
 
 export default function (): void {
     const logger = LoggerFactory("gulp")
@@ -33,7 +33,7 @@ export default function (): void {
     const task = gulp.task
     const distDir: string = Configuration("dist") || "./dist"
 
-    ServerBootstrap()
+    ServerPreparation()
 
     task('clean', (done) => {
         process.chdir(path.join(distDir, ".."))

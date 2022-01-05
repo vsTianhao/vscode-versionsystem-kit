@@ -4,7 +4,8 @@ versionsystem在vscode中的开发工具
 
 ## Features
 
-- 开发服务器，就像grunt serve，当然这个没有用到grunt，这是用gulp的
+- 开发服务器，就像grunt serve，只不过这是用gulp的
+- 信号服务器，就是grunt的livereload，负责修改后在浏览器刷新页面，启动和关闭都伴随开发服务器，可以查看连接情况
 - 编译打包 (暂时没好)
 - 上传到服务器 (暂时没好)
 - 让服务器打包 (暂时没好)

@@ -24,7 +24,7 @@ export default function (): void {
                 transform(filepath) {
                     return `<script src="${filepath.replace(/^\//, '')}"></script>`
                 }
-            })).on('error', logger.error).pipe(gw.destDir("rootPath"))
+            })).pipe(gw.destDir())
     })
 
     task('change-css-files', (): NodeJS.ReadWriteStream => {
@@ -34,16 +34,17 @@ export default function (): void {
                 starttag: "// injector",
                 endtag: "// endinjector",
                 transform(filepath) {
-                    return `@import '${filepath.replace(/^\/client\/app\//, '').replace(/^\/client\/components\//, '')}';`
+                    return `@import '${filepath.replace(/^\/app\//, '').replace(/^\/components\//, '')}';`
                 }
             }))
-            .on('error', logger.error)
             .pipe(gw.destDir("appPath"))
     })
 
     task('dev-css', (): NodeJS.ReadWriteStream => {
-        logger.info("正在生成 app.css")
-        return CSSLoader().pipe(gw.destDir("appPath"))
+        logger.info("正在生成" + Configuration("integratedCSS"))
+        return CSSLoader().pipe(gw.destDir("appPath")).on("end", function () {
+            logger.info(Configuration("integratedCSS") + "已生成")
+        })
     })
 
     task('watch', (done) => {
@@ -53,11 +54,11 @@ export default function (): void {
         gw.watchFiles("cssMatch").on('add', gulp.series('change-css-files'))
             .on('unlink', gulp.series('change-css-files'))
             .on("change", gulp.series('dev-css'))
+        gw.watchFiles("mainCSS").on("change", gulp.series('dev-css'))
         gw.watchFiles(entries.concat([Configuration("frondendMainHTML"), Configuration("appHTML"), Configuration("componentsHTML"), Configuration("mainJS")])).on('change', (_path) => {
             instanceServer.changed(_path)
             logger.info("文件修改已通知:" + _path)
         })
-        gw.watchFiles("mainCSS").on("change", gulp.series('dev-css'))
         gw.watchFiles("integratedCSS").on("change", (_path) => {
             instanceServer.changed(_path)
             logger.info("样式调整已经通知")

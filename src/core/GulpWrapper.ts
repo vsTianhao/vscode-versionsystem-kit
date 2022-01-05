@@ -22,8 +22,8 @@ export default class GulpWrapper {
             .on('error', this.logger.error)
     }
 
-    destDir(pathKey: string): NodeJS.ReadWriteStream {
-        return gulp.dest(Configuration(pathKey), { cwd: Configuration("cwd") })
+    destDir(pathKey?: string): NodeJS.ReadWriteStream {
+        return gulp.dest(pathKey ? Configuration(pathKey) : "./", this.getGulpOptions())
             .on('error', this.logger.error)
     }
 

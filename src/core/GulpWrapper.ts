@@ -34,6 +34,7 @@ export default class GulpWrapper {
         } else {
             searchGlobs = Configuration(pathKeyOrFiles + "")
         }
+        this.logger.info("监听:" + searchGlobs)
         const watcherObj = gulp.watch(searchGlobs, this.getGulpOptions() as gulp.WatchOptions)
         this.watchArray.push(watcherObj)
         return watcherObj

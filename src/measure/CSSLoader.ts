@@ -43,10 +43,6 @@ const gulpSass = (opts): eventStream.MapStream => {
 
 export default function (): NodeJS.ReadableStream {
     return gw.srcLoad("mainCSS")
-        .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
-            console.log("css: " + file.basename)
-            done(null, file)
-        }))
         .pipe(gulpSass({
             includePaths: [
                 path.join(Configuration("cwd"), "./client/bower_components"),

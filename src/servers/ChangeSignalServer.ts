@@ -6,11 +6,13 @@ import { parse } from 'url'
 // import anybody from 'body/any'
 // import qs from 'qs'
 // import livereloadService from 'livereload-js'
-import WebSocket from 'faye-websocket'
 // import objectAssign from 'object-assign'
+import WebSocket from 'faye-websocket'
+import LoggerFactory from '../LoggerFactory'
 
 const CONTENT_TYPE = 'content-type'
 const FORM_TYPE = 'application/x-www-form-urlencoded'
+const logger = LoggerFactory('change-signal-server')
 
 class Client extends events.EventEmitter {
 
@@ -19,30 +21,45 @@ class Client extends events.EventEmitter {
 
     constructor(req, socket, head) {
         super()
+        this.id = 'ws-' + Math.floor(Math.random() * 0xfffff).toString(16)
         this.ws = new WebSocket(req, socket, head)
-        // this.ws.onmessage = (event): unknown => {
-        //     const data = this.data(event)
-        //     if (this[data.command]) return this[data.command](data)
-        // }
-        this.ws.onclose = this.close.bind(this)
-        this.id = 'ws' + Math.random()
+        logger.trace("客户端【" + this.id + "】已经连接")
+        this.ws.onmessage = (event): unknown => {
+            const data = this.data(event)
+            if (this[data.command]) {
+                return this[data.command](data)
+            } else {
+                logger.warn("未知命令:" + data.command)
+            }
+        }
+        this.ws.onclose = (): void => this.close()
     }
 
     close(): void {
         if (this.ws) {
+            logger.trace("客户端【" + this.id + "】已经被关闭")
             this.ws.close()
             this.ws = null
         }
     }
 
-    // info(data): void {
-    //     if (data) {
-    //         this.emit('info', objectAssign({}, data, { id: this.id }))
-    //         this.url = data.url
-    //     }
+    hello(): void {
+        this.send({
+            command: 'hello',
+            protocols: [
+                'http://livereload.com/protocols/official-7'
+            ],
+            serverName: 'change-signal-server'
+        })
+    }
 
-    //     return objectAssign({}, data || {}, { id: this.id, url: this.url })
-    // }
+    info(data): void {
+        if (data) {
+            this.emit('info', Object.assign({}, data, { id: this.id }))
+            this.url = data.url
+        }
+        return { id: this.id, url: this.url }
+    }
 
     reload(file: string): void {
         this.send({
@@ -104,7 +121,9 @@ export default class ChangeSignalServer extends events.EventEmitter {
             // })
         })
         this.server.on('upgrade', this.websocketify.bind(this))
-        this.server.on('error', this.error.bind(this))
+        this.server.on('error', function (err) {
+            logger.error(err)
+        })
         this.on(`GET ${this.rootPath}`, this.index.bind(this))
         this.on(`GET ${this.rootPath}changed`, this.changed.bind(this))
         this.on(`POST ${this.rootPath}changed`, this.changed.bind(this))
@@ -112,7 +131,9 @@ export default class ChangeSignalServer extends events.EventEmitter {
             res.setHeader('Content-Type', 'application/javascript')
             fs.createReadStream('../resources/js/livereload.min.js').pipe(res)
         })
-        this.on(`GET ${this.rootPath}kill`, this.close.bind(this))
+        this.on(`GET ${this.rootPath}kill`, () => {
+            this.close()
+        })
     }
 
     listen(port: number, host: string): void {
@@ -142,7 +163,7 @@ export default class ChangeSignalServer extends events.EventEmitter {
 
     defaultHandler(res, err): void {
         if (!err) return this.notFound(res)
-        this.error(err)
+        logger.error(err)
         res.setHeader('Content-Type', 'text/plain')
         res.statusCode = 500
         res.end('Error: ' + err.stack)
@@ -163,7 +184,7 @@ export default class ChangeSignalServer extends events.EventEmitter {
         this.clients.set(client.id, client)
         socket.on('error', (e) => {
             if (e.code === 'ECONNRESET') return
-            this.error(e)
+            logger.error(e)
         })
 
         client.once('info', (data) => {
@@ -180,25 +201,14 @@ export default class ChangeSignalServer extends events.EventEmitter {
     close(): void {
         for (const client of this.clients.values()) {
             client.close()
+            logger.info("因服务器关闭，已中断与【" + client.id + "】的连接")
         }
         this.server.close()
     }
 
-    error(e): void {
-        if (typeof e === 'undefined') {
-            console.error('... Uhoh. Got error %s ...')
-            return
-        }
-        console.error('... Uhoh. Got error %s ...', e.message)
-        console.error(e.stack)
-        if (e.code !== 'EADDRINUSE') return
-        console.error('You already have a server listen')
-        console.error('You should stop it and try again.')
-    }
-
-    changed(path: string): void {
-        for (const client of this.clients.values()) {
-            client.reload(path)
+    changed(_path: string): void {
+        for (const clientItem of this.clients.values()) {
+            clientItem.reload(_path)
         }
     }
 

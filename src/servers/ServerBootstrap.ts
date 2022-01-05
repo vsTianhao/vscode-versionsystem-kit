@@ -8,7 +8,7 @@ import CSSLoader from '../measure/CSSLoader'
 import GulpWrapper from '../core/GulpWrapper'
 
 export default function (): void {
-    const logger = LoggerFactory("dev-server-task")
+    const logger = LoggerFactory("dev-server-bootstrap")
 
     const task = gulp.task
     const gw = new GulpWrapper()
@@ -22,7 +22,7 @@ export default function (): void {
                 starttag: "<!-- injector:js -->",
                 endtag: "<!-- endinjector -->",
                 transform(filepath) {
-                    return `<script src="${filepath.replace(/^\/client\//, '')}"></script>`
+                    return `<script src="${filepath.replace(/^\//, '')}"></script>`
                 }
             })).on('error', logger.error).pipe(gw.destDir("rootPath"))
     })
@@ -42,21 +42,21 @@ export default function (): void {
     })
 
     task('dev-css', (): NodeJS.ReadWriteStream => {
-        logger.info("生成 app/app.css")
+        logger.info("正在生成 app.css")
         return CSSLoader().pipe(gw.destDir("appPath"))
     })
 
     task('watch', (done) => {
         const entries: string[] = Configuration("entries")
         gw.watchFiles("entries").on('add', gulp.series('dev-index-html'))
-        gw.watchFiles("entries").on('unlink', gulp.series('dev-index-html'))
+            .on('unlink', gulp.series('dev-index-html'))
         gw.watchFiles("cssMatch").on('add', gulp.series('change-css-files'))
-        gw.watchFiles("cssMatch").on('unlink', gulp.series('change-css-files'))
+            .on('unlink', gulp.series('change-css-files'))
+            .on("change", gulp.series('dev-css'))
         gw.watchFiles(entries.concat([Configuration("frondendMainHTML"), Configuration("appHTML"), Configuration("componentsHTML"), Configuration("mainJS")])).on('change', (_path) => {
             instanceServer.changed(_path)
             logger.info("文件修改已通知:" + _path)
         })
-        gw.watchFiles("cssMatch").on("change", gulp.series('dev-css'))
         gw.watchFiles("mainCSS").on("change", gulp.series('dev-css'))
         gw.watchFiles("integratedCSS").on("change", (_path) => {
             instanceServer.changed(_path)

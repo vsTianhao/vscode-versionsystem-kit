@@ -28,7 +28,7 @@ export default class LeftBarViewer implements vscode.TreeDataProvider<TaskItemBt
             if (tasks.length) {
                 return tasks
             }
-            return [new TaskItemBtn("other-unknown", "这个任务组暂未实现任何具体的任务")]
+            return [new TaskItemBtn("others-unknown", "这个任务组暂未实现任何具体的任务")]
         }
         // 执行任务
         // const result: TaskResult = basicTask.exec(element.taskId)

@@ -3,8 +3,7 @@ import path from 'path'
 import concat from "gulp-concat"
 import eventStream from 'event-stream'
 import Configuration from '../Configuration'
-import GulpWrapper from '../core/GulpWrapper'
-import CommonFile from '../types/CommonFile'
+import GulpWrapper from '../gulp/GulpWrapper'
 import LoggerFactory from '../LoggerFactory'
 
 const logger = LoggerFactory("css-loader")

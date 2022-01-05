@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import Configuration from '../Configuration'
 import LoggerFactory from '../LoggerFactory'
-import GulpSort from '../GulpSort'
+import GulpSort from './GulpSort'
 
 export default class GulpWrapper {
 

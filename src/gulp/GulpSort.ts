@@ -1,7 +1,7 @@
 import gulpSort from 'gulp-sort'
 import stable from 'stable'
 import path from 'path'
-import Configuration from './Configuration'
+import Configuration from '../Configuration'
 
 export default function (): NodeJS.ReadWriteStream {
     return gulpSort({

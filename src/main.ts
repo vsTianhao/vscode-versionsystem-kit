@@ -4,7 +4,7 @@ import LeftBarViewer from "./views/LeftBarViewer"
 import LoggerFactory from './LoggerFactory'
 import * as GulpCommands from './cmds/GulpCommands'
 import OtherCommands from './cmds/OtherCommands'
-import GulpOperate from "./GulpOperate"
+import GulpOperate from "./gulp/GulpOperate"
 
 export function activate(context: vscode.ExtensionContext): void {
 	const logger = LoggerFactory("main")

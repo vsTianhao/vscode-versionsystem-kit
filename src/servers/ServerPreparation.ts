@@ -3,7 +3,7 @@ import inject from 'gulp-inject'
 import LoggerFactory from '../LoggerFactory'
 import Configuration from '../Configuration'
 import CSSLoader from '../measure/CSSLoader'
-import GulpWrapper from '../core/GulpWrapper'
+import GulpWrapper from '../gulp/GulpWrapper'
 
 export default function (): void {
     const logger = LoggerFactory("dev-server-preparation")
@@ -12,8 +12,6 @@ export default function (): void {
     const gw = new GulpWrapper()
 
     task('dev-index-html', (): NodeJS.ReadWriteStream => {
-        // const entries: string[] = Configuration("entries")
-        // logger.info(`准备向HTML入口"${mainHTML}"进行注入: ${entries}`)
         return gw.srcLoad("frondendMainHTML")
             .pipe(inject(gw.folderScan("entries"), {
                 starttag: "<!-- injector:js -->",

@@ -19,12 +19,12 @@ import ngAnnotate from 'gulp-ng-annotate'
 import templateCache from 'gulp-angular-templatecache'
 import CacheBuster from 'gulp-cachebust'//这个应该不需要了
 import babelPresetEnv from "@babel/preset-env"
-import LoggerFactory from './LoggerFactory'
-import RemoteFile from './types/RemoteFile'
-import CommonFile from './types/CommonFile'
-import CSSLoader from './measure/CSSLoader'
-import Configuration from './Configuration'
-import ServerPreparation from './servers/ServerPreparation'
+import LoggerFactory from '../LoggerFactory'
+import RemoteFile from '../types/RemoteFile'
+import CommonFile from '../types/CommonFile'
+import CSSLoader from '../measure/CSSLoader'
+import Configuration from '../Configuration'
+import ServerPreparation from '../servers/ServerPreparation'
 
 export default function (): void {
     const logger = LoggerFactory("gulp")

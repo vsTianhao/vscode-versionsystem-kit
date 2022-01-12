@@ -13,12 +13,16 @@ const logger = LoggerFactory('change-signal-server')
 class Client extends events.EventEmitter {
 
     public id: string;
+    public createTime: string;
+    public open: boolean;
     private ws: WebSocket;
 
     constructor(req, socket, head) {
         super()
         this.id = 'ws-' + Math.floor(Math.random() * 0xfffff).toString(16)
         this.ws = new WebSocket(req, socket, head)
+        this.createTime = new Date().toJSON()
+        this.open = true
         logger.trace("客户端【" + this.id + "】已经连接")
         this.ws.onmessage = (event): unknown => {
             const data = this.data(event)
@@ -35,6 +39,7 @@ class Client extends events.EventEmitter {
         if (this.ws) {
             logger.trace("客户端【" + this.id + "】已经被关闭")
             this.ws.close()
+            this.open = false
             this.ws = null
         }
     }
@@ -185,7 +190,9 @@ export default class ChangeSignalServer extends events.EventEmitter {
 
     close(): void {
         for (const client of this.clients.values()) {
-            client.close()
+            if (client.open) {
+                client.close()
+            }
             logger.info("因服务器关闭，已中断与【" + client.id + "】的连接")
         }
         this.server.close()
@@ -199,23 +206,13 @@ export default class ChangeSignalServer extends events.EventEmitter {
 
     getClientIDs(): string[] {
         const ret: string[] = new Array<string>()
-        for (const clientID of this.clients.keys()) {
-            ret.push(clientID)
+        for (const clientItem of this.clients.values()) {
+            if (!clientItem.open) {
+                continue
+            }
+            ret.push(`${clientItem.id} (${clientItem.createTime})`)
         }
         return ret
     }
 
-    param(name, req): void {
-        let param
-        if (req.body && req.body[name]) param = req.body[name]
-        else if (req.params && req.params[name]) param = req.params[name]
-        else if (req.query && req.query[name]) param = req.query[name]
-
-        if (name === 'files') {
-            param = Array.isArray(param) ? param
-                : typeof param === 'string' ? param.split(/[\s,]/)
-                    : []
-        }
-        return param
-    }
 }

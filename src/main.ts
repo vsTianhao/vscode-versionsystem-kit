@@ -25,10 +25,24 @@ export function activate(context: vscode.ExtensionContext): void {
 			logger.fatal('已经拒绝初始化')
 			return
 		}
-		vscode.workspace.getConfiguration("vskit").update("cwd", vscode.workspace.rootPath)
-		vscode.workspace.getConfiguration("vskit").update("dist", path.join(vscode.workspace.rootPath, 'dist'))
 		if (!vscode.workspace.getConfiguration("vskit").get("projectName")) {
-			vscode.workspace.getConfiguration("vskit").update("projectName", vscode.workspace.name)
+			let name = vscode.workspace.name.toUpperCase()
+			if (~name.indexOf("THCMS")) {
+				name = "THCMSApplication"
+			} else if (~name.indexOf("AMS")) {
+				name = "AMSApplication"
+			} else if (~name.indexOf("VOSAPI")) {
+				name = "VosApiApplication"
+			} else if (~name.indexOf("VIOVOS")) {
+				name = "VIOVOSApplication"
+			} else if (~name.indexOf("VOS")) {
+				name = "VOSApplication"
+			} else {
+				name = "EmrApplication"
+			}
+			vscode.workspace.getConfiguration("vskit").update("projectName", name)
+			vscode.workspace.getConfiguration("vskit").update("cwd", vscode.workspace.rootPath)
+			vscode.workspace.getConfiguration("vskit").update("dist", path.join(vscode.workspace.rootPath, 'dist'))
 		}
 		GulpOperate()
 	}))

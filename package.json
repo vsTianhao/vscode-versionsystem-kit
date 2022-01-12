@@ -188,7 +188,7 @@
         "compile": "npm run -S esbuild-base",
         "compile2": "tsc -p ./",
         "lint": "eslint src --ext ts",
-        "esbuild-base": "rimraf out && esbuild ./src/main.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+        "esbuild-base": "rimraf out && esbuild ./src/main.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node --minify",
         "build": "npm run -S esbuild-base -- --sourcemap",
         "watch": "npm run -S esbuild-base -- --sourcemap",
         "watch2": "tsc -watch -p ./",

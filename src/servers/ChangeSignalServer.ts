@@ -192,15 +192,17 @@ export default class ChangeSignalServer extends events.EventEmitter {
         for (const client of this.clients.values()) {
             if (client.open) {
                 client.close()
+                logger.info("因服务器关闭，已中断与【" + client.id + "】的连接")
             }
-            logger.info("因服务器关闭，已中断与【" + client.id + "】的连接")
         }
         this.server.close()
     }
 
     changed(_path: string): void {
         for (const clientItem of this.clients.values()) {
-            clientItem.reload(_path)
+            if (clientItem.open) {
+                clientItem.reload(_path)
+            }
         }
     }
 

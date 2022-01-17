@@ -8,6 +8,9 @@ import GulpWrapper from '../gulp/GulpWrapper'
 import { exec } from 'child_process'
 import path from 'path'
 import { DevServer, DevServerParams } from '../servers/DevServer'
+// import globule from 'globule'
+// import client from 'scp2'
+// import RemoteFile from '../types/RemoteFile'
 
 const logger = LoggerFactory("gulp-task")
 const gw = new GulpWrapper()
@@ -111,9 +114,42 @@ export function build(type = "all"): void {
     if (taskBeforeValidateFn()) {
         return
     }
-    gulp.series("build")(() => void 0)
-    vscode.window.showInformationMessage("build")
-    vscode.window.showInformationMessage(type)
+    if (type === "all") {
+        gulp.series('clean', (done) => { logger.info("\n↓↓↓↓↓↓↓↓↓↓ 准备并行编译"), done() },
+            'build-internal-code', (done) => { logger.info("↑↑↑↑↑↑↑↑↑↑ 并行编译完成, 串行编译\n"), done() },
+            'copy-html', (done) => { logger.info("index.html已经复制到dist并重命名为home.jsp"), done() },
+            'rename-hash-file',
+            "compile-jsp",
+            (done) => {
+                vscode.window.showInformationMessage(
+                    "编译完成上传到服务器吗?",
+                    ...["是", "否"]
+                ).then((answer) => {
+                    if (answer === "是") {
+                        // const remoteFiles: RemoteFile[] = Configuration("remoteFiles")
+                        // remoteFiles.map(distItem => {
+                        //     if (distItem.type !== type) {
+                        //         return
+                        //     }
+                        //     distItem.sourceFile.map(matchItem => {
+                        //         const dest = path.join(Configuration("remotePrefix"), Configuration("projectName"), distItem.dest).replace(/\\/g, '/')
+                        //         globule.find(path.join(Configuration(type), matchItem)).map((src) => {
+                        //             client.scp(src, `administrator:${result.password}@${Configuration("remoteHost")}:${dest}`, (scpErr) => {
+                        //                 if (scpErr) {
+                        //                     logger.error("failure:" + src + "\n\t=> " + dest)
+                        //                     logger.error(scpErr)
+                        //                     return
+                        //                 }
+                        //                 logger.info("success:" + src + "\n\t=> " + dest)
+                        //             })
+                        //         })
+                        //     })
+                        // })
+                    }
+                })
+                done()
+            })()
+    }
 }
 
 export function appJS(type = "needAssume"): void {

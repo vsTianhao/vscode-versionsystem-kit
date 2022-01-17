@@ -218,7 +218,7 @@
         "gulp-ng-annotate": "^2.1.0",
         "gulp-sort": "^2.0.0",
         "gulp-sourcemaps": "^1.5.1",
-        "gulp-uglify": "^1.1.0",
+        "gulp-uglify-integrated": "^0.0.1",
         "log4js": "^6.3.0",
         "middie": "^5.3.0",
         "prompt": "^1.1.0",

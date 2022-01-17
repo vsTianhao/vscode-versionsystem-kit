@@ -6,21 +6,19 @@ import source from 'vinyl-source-stream'
 import buffer from 'vinyl-buffer'
 import babel from 'gulp-babel'
 // import uglify from 'gulp-uglify'
+import uglify from 'gulp-uglify-integrated'
 // import babelify from 'babelify'
 import path from 'path'
 import change from 'gulp-change'
 import inject from 'gulp-inject'
 import concat from "gulp-concat"
 import cleanCss from 'gulp-clean-css'
-import prompt from 'prompt'
-import client from 'scp2'
 import eventStream from 'event-stream'
 import ngAnnotate from 'gulp-ng-annotate'
 import templateCache from 'gulp-angular-templatecache'
 import CacheBuster from 'gulp-cachebust'//这个应该不需要了
 import babelPresetEnv from "@babel/preset-env"
 import LoggerFactory from '../LoggerFactory'
-import RemoteFile from '../types/RemoteFile'
 import CommonFile from '../types/CommonFile'
 import CSSLoader from '../measure/CSSLoader'
 import Configuration from '../Configuration'
@@ -71,7 +69,8 @@ export default function (): void {
                         return "components" + url
                     }
                 })))
-            .pipe(concat("templates-cache.html.js")).pipe(change((content) => {
+            .pipe(concat("templates-cache.html.js"))
+            .pipe(change((content) => {
                 return content.replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
                     .replace(/..\/..\/bower_components/g, "/" + Configuration("projectName") + "/bower_components")
             }))
@@ -98,7 +97,7 @@ export default function (): void {
             "presets": [babelPresetEnv]
         }))
         .pipe(ngAnnotate())
-        // .pipe(uglify()) // TODO uglify
+        .pipe(uglify())
         .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
             logger.info(file.basename + "已经执行完转义，注入，混淆操作")
             done(null, file)
@@ -175,49 +174,23 @@ export default function (): void {
             .pipe(gulp.dest(distDir))
     })
 
-    task('build', gulp.series('clean', (done) => { console.log("\n↓↓↓↓↓↓↓↓↓↓ 准备并行编译"), done() },
-        'build-internal-code', (done) => { console.log("↑↑↑↑↑↑↑↑↑↑ 并行编译完成, 串行编译\n"), done() },
-        'copy-html', (done) => { logger.info("index.html已经复制到dist并重命名为home.jsp"), done() },
-        'rename-hash-file',
-        "compile-jsp",
-        (done) => { logger.info("编译结束，可执行" + "vs-kit upload" + "上传到服务器"), done() }))
+    // const uploadDir = (type): void => prompt.get(['password'], (err, result) => {
+    //     //, done: Undertaker.TaskFunction
+    //     if (err) {
+    //         logger.error(err)
+    //     }
+    // })
 
-    const uploadDir = (type): void => prompt.get(['password'], (err, result) => {
-        //, done: Undertaker.TaskFunction
-        if (err) {
-            logger.error(err)
-        }
-        const remoteFiles: RemoteFile[] = Configuration("remoteFiles")
-        remoteFiles.map(distItem => {
-            if (distItem.type !== type) {
-                return
-            }
-            distItem.sourceFile.map(matchItem => {
-                const dest = path.join(Configuration("remotePrefix"), Configuration("projectName"), distItem.dest).replace(/\\/g, '/')
-                globule.find(path.join(Configuration(type), matchItem)).map((src) => {
-                    client.scp(src, `administrator:${result.password}@${Configuration("remoteHost")}:${dest}`, (scpErr) => {
-                        if (scpErr) {
-                            logger.error("failure:" + src + "\n\t=> " + dest)
-                            logger.error(scpErr)
-                            return
-                        }
-                        logger.info("success:" + src + "\n\t=> " + dest)
-                    })
-                })
-            })
-        })
-    })
+    // task('upload', () => {
+    //     uploadDir('dist')
+    // })
 
-    task('upload', () => {
-        uploadDir('dist')
-    })
+    // task('upload-assert', () => {
+    //     uploadDir('assert')
+    // })
 
-    task('upload-assert', () => {
-        uploadDir('assert')
-    })
-
-    task('upload-i18n', () => {
-        uploadDir('i18n')
-    })
+    // task('upload-i18n', () => {
+    //     uploadDir('i18n')
+    // })
 
 }

@@ -5,10 +5,11 @@ import LoggerFactory from './LoggerFactory'
 import * as GulpCommands from './cmds/GulpCommands'
 import OtherCommands from './cmds/OtherCommands'
 import GulpOperate from "./gulp/GulpOperate"
+import AngularJsDefine from "./define/AngularJsDefine"
 
 export function activate(context: vscode.ExtensionContext): void {
 	const logger = LoggerFactory("main")
-
+	new AngularJsDefine()
 	logger.info('扩展"vscode-versionsystem-kit"已激活')
 
 	context.subscriptions.push(vscode.window.registerTreeDataProvider("vskit.views.leftBar", new LeftBarViewer()))

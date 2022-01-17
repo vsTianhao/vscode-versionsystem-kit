@@ -10,7 +10,8 @@ versionsystem在vscode中的开发工具
 - 上传到服务器 (暂时没好)
 - 让服务器打包 (暂时没好)
 - kendo template高亮语法识别 (有些DOM可能不行) (暂时没好)
-- angularjs指令的高亮跳转 (我们的AST很复杂，也许做不了)
+- angularjs的高亮跳转
+    - 实现了文件内的scope跳转
 - 其他考虑的...
 
 ## Requirements

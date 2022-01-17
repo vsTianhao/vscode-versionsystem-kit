@@ -115,12 +115,13 @@ export function build(type = "all"): void {
         return
     }
     if (type === "all") {
-        gulp.series('clean', (done) => { logger.info("\n↓↓↓↓↓↓↓↓↓↓ 准备并行编译"), done() },
-            'build-internal-code', (done) => { logger.info("↑↑↑↑↑↑↑↑↑↑ 并行编译完成, 串行编译\n"), done() },
-            'copy-html', (done) => { logger.info("index.html已经复制到dist并重命名为home.jsp"), done() },
+        gulp.series('clean',
+            'build-internal-code',
+            'copy-html',
             'rename-hash-file',
             "compile-jsp",
             (done) => {
+                logger.info("完毕")
                 vscode.window.showInformationMessage(
                     "编译完成上传到服务器吗?",
                     ...["是", "否"]

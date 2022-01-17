@@ -109,7 +109,7 @@
                 },
                 "vskit.dist": {
                     "type": "string",
-                    "scope": "resource",
+                    "default": "dist",
                     "description": "输出目录"
                 },
                 "vskit.mainJS": {
@@ -144,6 +144,20 @@
                     "type": "string",
                     "description": "集成的css"
                 },
+                "vskit.compileCSS": {
+                    "type": "string",
+                    "default": "app.*.css",
+                    "description": "编译后的css"
+                },
+                "vskit.compileJS": {
+                    "type": "array",
+                    "default": [
+                        "main.*.js",
+                        "app.*.js",
+                        "templates-*.*.js"
+                    ],
+                    "description": "编译后的js"
+                },
                 "vskit.cssMatch": {
                     "type": "array",
                     "description": "所有的CSS目录，需是一个数组，注入给核心CSS"
@@ -151,6 +165,16 @@
                 "vskit.remoteFiles": {
                     "type": "object",
                     "description": "这是个json"
+                },
+                "vskit.tmp": {
+                    "type": "string",
+                    "default": "../dist/.tmp",
+                    "description": "编译的临时目录"
+                },
+                "vskit.tmpFiles": {
+                    "type": "string",
+                    "default": ".tmp/*.*",
+                    "description": "临时目录中的文件"
                 },
                 "vskit.enableSourceMap": {
                     "type": "boolean",
@@ -202,7 +226,6 @@
         "browserify": "^17.0.0",
         "chalk": "^1.1.3",
         "connect-livereload": "^0.6.1",
-        "del": "^1.1.1",
         "event-stream": "^4.0.1",
         "fastify": "^3.19.2",
         "faye-websocket": "^0.11.4",
@@ -222,6 +245,7 @@
         "log4js": "^6.3.0",
         "middie": "^5.3.0",
         "prompt": "^1.1.0",
+        "rimraf": "^3.0.2",
         "sass": "^1.12.0",
         "scp2": "^0.5.0",
         "serve-static": "^1.14.1",

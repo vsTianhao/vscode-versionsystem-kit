@@ -43,7 +43,6 @@ export function activate(context: vscode.ExtensionContext): void {
 			}
 			vscode.workspace.getConfiguration("vskit").update("projectName", name)
 			vscode.workspace.getConfiguration("vskit").update("cwd", vscode.workspace.rootPath)
-			vscode.workspace.getConfiguration("vskit").update("dist", path.join(vscode.workspace.rootPath, 'dist'))
 		}
 		GulpOperate()
 	}))

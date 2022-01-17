@@ -7,7 +7,8 @@ import GulpSort from './GulpSort'
 
 export default class GulpWrapper {
 
-    private getGulpOptions = (): { cwd: string } => ({ cwd: path.join(Configuration("cwd"), Configuration("rootPath")) })
+    public cwd = "rootPath"
+    private getGulpOptions = (): { cwd: string } => ({ cwd: path.join(Configuration("cwd"), Configuration(this.cwd)) })
     private watchArray: fs.FSWatcher[] = Array<fs.FSWatcher>()
     private logger = LoggerFactory("gulp-wrapper")
 
@@ -17,8 +18,14 @@ export default class GulpWrapper {
     }
 
     folderScan(pathKey: string): NodeJS.ReadWriteStream {
-        return gulp.src(Configuration(pathKey), { cwd: path.join(Configuration("cwd"), Configuration("rootPath")), read: false })
+        return gulp.src(Configuration(pathKey), { cwd: path.join(Configuration("cwd"), Configuration(this.cwd)), read: false })
             .pipe(GulpSort())
+            .on('error', this.logger.error)
+    }
+
+    dest(): NodeJS.ReadWriteStream {
+        this.cwd = "dist"
+        return gulp.dest("./", this.getGulpOptions())
             .on('error', this.logger.error)
     }
 

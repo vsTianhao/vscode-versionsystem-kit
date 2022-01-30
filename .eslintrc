@@ -15,7 +15,16 @@
 			1,
 			"never"
 		],
-		"no-consecutive-blank-lines": 0
+		"no-consecutive-blank-lines": 0,
+		"@typescript-eslint/no-this-alias": [
+			"error",
+			{
+				"allowDestructuring": true,
+				"allowedNames": [
+					"self"
+				]
+			}
+		]
 	},
 	"parserOptions": {
 		"parser": "@typescript-eslint/parser"

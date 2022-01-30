@@ -1,5 +1,7 @@
 {
     "files.exclude": {
         "out": true
-    }
+    },
+    "vskit.projectName": "EmrApplication",
+    "vskit.cwd": "e:\\home\\vscode-versionsystem-kit"
 }

@@ -1,14 +1,12 @@
 import gulp from 'gulp'
 import rimraf from 'rimraf'
-// import globule from 'globule'
-// import browserify from 'browserify'
+import browserify from './browserify'
 import source from 'vinyl-source-stream'
 import buffer from 'vinyl-buffer'
 import babel from 'gulp-babel'
-// import uglify from 'gulp-uglify'
 import uglify from 'gulp-uglify-integrated'
-// import babelify from 'babelify'
 import path from 'path'
+import globule from 'globule'
 import change from 'gulp-change'
 import inject from 'gulp-inject'
 import concat from "gulp-concat"
@@ -82,24 +80,29 @@ export default function (): void {
             .pipe(gw.destDir("tmp"))
     })
 
-    const buildCoreJS = (entries, name): NodeJS.ReadableStream => gw.srcLoad(entries)
-        // .pipe(source(name))
-        // .pipe(buffer())
-        .pipe(babel({
-            compact: true,
-            "presets": [babelPresetEnv]
-        }))
-        .pipe(ngAnnotate())
-        .pipe(uglify({ logger }))
-        .pipe(concat(name))
-        .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
-            logger.info(file.basename + "已经执行完转义，注入，混淆操作")
-            done(null, file)
-        }))
+    const buildCoreJS = (entries: string[], name: string): NodeJS.ReadableStream => {
+        const _browserify = new browserify({
+            entries: entries,
+            basedir: path.join(Configuration("cwd"), Configuration("rootPath"))
+        })
+        return _browserify.bundle().pipe(source(name))
+            .pipe(buffer())
+            .pipe(babel({
+                compact: true,
+                "presets": [babelPresetEnv]
+            }))
+            .pipe(ngAnnotate())
+            .pipe(uglify({ logger }))
+            .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
+                logger.info(file.basename + "已经执行完转义，注入，混淆操作")
+                done(null, file)
+            }))
+            .on('error', logger.error)
+    }
 
     task('build-app-main', (): void => {
         logger.info("开始编译main (client/app/app.js)")
-        return buildCoreJS("mainJS", 'main.js').pipe(change((content) => {
+        return buildCoreJS([Configuration("mainJS")], 'main.js').pipe(change((content) => {
             return content.replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
                 .replace(/.serviceRoot="[a-zA-Z:/0-9.]+"/, `.serviceRoot="/${Configuration("projectName")}"`)
                 .replace(/app\/i18n/g, "/" + Configuration("projectName") + "/app/i18n")
@@ -110,16 +113,17 @@ export default function (): void {
 
     task('build-app-modules-js', (): void => {
         logger.info("开始编译app (client/app/**/*.js)")
-        //globule.find(Configuration("entries"))
-        return buildCoreJS("entries", 'app.js').pipe(change((content) => {
+        return buildCoreJS(globule.find({
+            src: Configuration("entries"),
+            srcBase: path.join(Configuration("cwd"), Configuration("rootPath"))
+        }), 'app.js').pipe(change((content) => {
             return content.replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
                 .replace(/app\/i18n/g, "/" + Configuration("projectName") + "/app/i18n")
                 .replace(/..\/..\/bower_components\/bootstrap\/dist\/js/g, "/" + Configuration("projectName") + "/bower_components/bootstrap/dist/js")
         })).pipe(gw.destDir("tmp"))
     })
 
-    //parallel
-    task('build-internal-code', gulp.series('build-css', 'build-template-cache', 'build-app-main', 'build-app-modules-js'))
+    task('build-internal-code', gulp.parallel('build-css', 'build-template-cache', 'build-app-main', 'build-app-modules-js'))
 
     task('copy-html', () => gw.srcLoad("frondendMainHTML")
         .pipe(concat(Configuration("backendMainHTML")))
@@ -166,6 +170,11 @@ export default function (): void {
                 done(null, file)
             }))
             .pipe(gw.dest())
+    })
+
+    task('set-gw-cwd', (done): void => {
+        gw.cwd = "rootPath"
+        done()
     })
 
 }

@@ -120,6 +120,7 @@ export function build(type = "all"): void {
             'copy-html',
             'rename-hash-file',
             "compile-jsp",
+            "set-gw-cwd",
             (done) => {
                 logger.info("完毕")
                 vscode.window.showInformationMessage(

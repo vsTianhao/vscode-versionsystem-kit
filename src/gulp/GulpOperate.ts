@@ -1,6 +1,6 @@
 import gulp from 'gulp'
 import rimraf from 'rimraf'
-import browserify from './browserify'
+import Browserify from './Browserify'
 import source from 'vinyl-source-stream'
 import buffer from 'vinyl-buffer'
 import babel from 'gulp-babel'
@@ -81,7 +81,7 @@ export default function (): void {
     })
 
     const buildCoreJS = (entries: string[], name: string): NodeJS.ReadableStream => {
-        const _browserify = new browserify({
+        const _browserify = new Browserify({
             entries: entries,
             basedir: path.join(Configuration("cwd"), Configuration("rootPath"))
         })

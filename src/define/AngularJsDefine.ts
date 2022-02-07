@@ -1,4 +1,5 @@
 import * as vscode from "vscode"
+import Configuration from "../Configuration"
 import LoggerFactory from "../LoggerFactory"
 
 class AngularJsDefineProvider implements vscode.DefinitionProvider {
@@ -20,6 +21,10 @@ class AngularJsDefineProvider implements vscode.DefinitionProvider {
         this.document = document
         this.search = document.getText(range)
         this.range = range
+        if (this.strAt(-11) === "_.services.") {
+            return this.findCommonServices()
+        }
+        // scope部分的搜索
         if (this.strAt(-6) !== "scope.") {
             return
         }
@@ -57,6 +62,25 @@ class AngularJsDefineProvider implements vscode.DefinitionProvider {
         return new vscode.Location(vscode.Uri.file(this.document.fileName), new vscode.Range(
             this.document.positionAt(thisDocIndex + 6),
             this.document.positionAt(thisDocIndex + 6 + this.search.length)))
+    }
+
+    /**
+     * 搜索common services定义的地方
+     */
+    public async findCommonServices(): vscode.Definition {
+        const uri: Uri[] = await vscode.workspace.findFiles(Configuration("commonServicesPath"))
+        if (!uri || !uri.length) {
+            this.logger.warn("找不到common.service.js")
+            return
+        }
+        const document = await vscode.workspace.openTextDocument(uri[0])
+        const thisDocIndex = document.getText().indexOf(`\t${this.search}`)
+        if (thisDocIndex === -1) {
+            return
+        }
+        return new vscode.Location(uri[0], new vscode.Range(
+            document.positionAt(thisDocIndex + 1),
+            document.positionAt(thisDocIndex + 1 + this.search.length)))
     }
 
     /**

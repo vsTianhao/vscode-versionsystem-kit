@@ -8,6 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.0.0]
 可以上传了
 可以跳转`_.services`了
+除了markdown不再用中文逗号
 不再在`app/**/*.js`中替换`bower_components`
 
 ## [0.0.7]

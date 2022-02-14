@@ -73,7 +73,7 @@ class Client extends events.EventEmitter {
     }
 
     data(event): unknown {
-        let data// TODO grammar 有趣的地方，应该能const
+        let data// TODO grammar 有趣的地方, 应该能const
         try {
             data = JSON.parse(event.data)
         } catch (e) {
@@ -192,7 +192,7 @@ export default class ChangeSignalServer extends events.EventEmitter {
         for (const client of this.clients.values()) {
             if (client.open) {
                 client.close()
-                logger.info("因服务器关闭，已中断与【" + client.id + "】的连接")
+                logger.info("因服务器关闭, 已中断与【" + client.id + "】的连接")
             }
         }
         this.server.close()

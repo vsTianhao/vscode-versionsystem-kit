@@ -33,7 +33,7 @@ const gulpSass = (opts): eventStream.MapStream => {
                 }
                 done(null, file)
             } catch (error) {
-                logger.error("SCSS编译失败，请确认SCSS版本无误及SCSS语法无误")
+                logger.error("SCSS编译失败, 请确认SCSS版本无误及SCSS语法无误")
                 logger.error(error)
             }
         })

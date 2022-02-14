@@ -6,11 +6,8 @@ import CommonFile from '../types/CommonFile'
 import eventStream from 'event-stream'
 import GulpWrapper from '../gulp/GulpWrapper'
 import { exec } from 'child_process'
-import path from 'path'
+import * as path from 'path'
 import { DevServer, DevServerParams } from '../servers/DevServer'
-// import globule from 'globule'
-// import client from 'scp2'
-// import RemoteFile from '../types/RemoteFile'
 
 const logger = LoggerFactory("gulp-task")
 const gw = new GulpWrapper()
@@ -19,11 +16,11 @@ let instanceServer: DevServer
 
 const taskBeforeValidateFn = (): boolean => {
     if (!Configuration("devServerPort")) {
-        logger.error("没有开发端口号，是否在项目下的./.vscode目录中缺少配置？也可以配置成全局的，请查看当前环境的配置")
+        logger.error("没有开发端口号, 是否在项目下的./.vscode目录中缺少配置？也可以配置成全局的, 请查看当前环境的配置")
         return true
     }
     if (!Configuration("mainJS")) {
-        logger.error("在VSCode的settings中必须要有完整的配置，目前约有十几项，那些配置是必备的")
+        logger.error("在VSCode的settings中必须要有完整的配置, 目前约有十几项, 那些配置是必备的")
         return true
     }
     if (!gulp.task('clean')) {
@@ -43,7 +40,7 @@ export async function run(type = "dev"): Promise<void> {
     try {
         if (type === "dev") {
             if (serverEstablished) {
-                logger.error("你不能重复的打开前端开发服务器 (即使确定前端开发服务器已经关闭，也必须尝试在面板上再关闭一下)")
+                logger.error("你不能重复的打开前端开发服务器 (即使确定前端开发服务器已经关闭, 也必须尝试在面板上再关闭一下)")
                 return
             }
             serverEstablished = true
@@ -94,7 +91,7 @@ export async function run(type = "dev"): Promise<void> {
             }
             const clients = instanceServer.clients()
             if (!clients.length) {
-                vscode.window.showInformationMessage("信号服务器已开启，但没有任何连接")
+                vscode.window.showInformationMessage("信号服务器已开启, 但没有任何连接")
                 return
             }
             vscode.window.showQuickPick(clients, {
@@ -128,25 +125,7 @@ export function build(type = "all"): void {
                     ...["是", "否"]
                 ).then((answer) => {
                     if (answer === "是") {
-                        // const remoteFiles: RemoteFile[] = Configuration("remoteFiles")
-                        // remoteFiles.map(distItem => {
-                        //     if (distItem.type !== type) {
-                        //         return
-                        //     }
-                        //     distItem.sourceFile.map(matchItem => {
-                        //         const dest = path.join(Configuration("remotePrefix"), Configuration("projectName"), distItem.dest).replace(/\\/g, '/')
-                        //         globule.find(path.join(Configuration(type), matchItem)).map((src) => {
-                        //             client.scp(src, `administrator:${result.password}@${Configuration("remoteHost")}:${dest}`, (scpErr) => {
-                        //                 if (scpErr) {
-                        //                     logger.error("failure:" + src + "\n\t=> " + dest)
-                        //                     logger.error(scpErr)
-                        //                     return
-                        //                 }
-                        //                 logger.info("success:" + src + "\n\t=> " + dest)
-                        //             })
-                        //         })
-                        //     })
-                        // })
+                        vscode.commands.executeCommand("vscode-versionsystem-kit.upload")
                     }
                 })
                 done()
@@ -159,14 +138,14 @@ export function appJS(type = "needAssume"): void {
         .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
             let content = file.contents.toString()
             if (~content.indexOf(Configuration("serverURL"))) {
-                logger.info("当前是服务器IP，将改为本地IP")
+                logger.info("当前是服务器IP, 将改为本地IP")
                 content = content.replace(Configuration("serverURL"), Configuration("localURL"))
                 // content = content.replace("/*comment begin*/", "/*comment begin*/");
                 if (type === "needAssume") {
                     exec("git update-index --assume-unchanged " + Configuration("mainJS"))
                 }
             } else if (~content.indexOf(Configuration("localURL"))) {
-                logger.info("当前是本地IP，将改为服务器IP")
+                logger.info("当前是本地IP, 将改为服务器IP")
                 content = content.replace(Configuration("localURL"), Configuration("serverURL"))
                 // content = content.replace("/*comment begin*/", "/*comment begin*/");
                 if (type === "needAssume") {

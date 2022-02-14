@@ -1,7 +1,7 @@
 import TaskItemBtn from '../views/TaskItemBtn'
 
 /**
- * 作为group task btns，taskId不可以有"-"
+ * 作为group task btns, taskId不可以有"-"
  * @returns 所有的group task btn
  */
 export default function (): TaskItemBtn[] {

@@ -7,7 +7,7 @@ import Middie from 'middie'
 import LoggerFactory from '../LoggerFactory'
 
 export interface DevServerParams {
-	host: string;//开发服务器的地址，一般是'127.0.0.1'或'0.0.0.0'
+	host: string;//开发服务器的地址, 一般是'127.0.0.1'或'0.0.0.0'
 	port: number;//开发服务器端口
 	folder: string;//服务器的文件夹
 }

@@ -16,6 +16,9 @@ export default async function (type = "dist"): Promise<void> {
     const password = await vscode.window.showInputBox({
         prompt: "服务器那边的密码"
     })
+    if (!password) {
+        return
+    }
     const remoteFiles: RemoteFile[] = Configuration("remoteFiles")
     remoteFiles.map(distItem => {
         if (distItem.type !== type) {

@@ -6,7 +6,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 
 ## [1.0.0]
+可以上传了
 可以跳转`_.services`了
+不再在`app/**/*.js`中替换`bower_components`
 
 ## [0.0.7]
 `build`修复完毕

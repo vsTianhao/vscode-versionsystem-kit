@@ -25,6 +25,7 @@
         "onCommand:vscode-versionsystem-kit.init",
         "onCommand:vscode-versionsystem-kit.dev",
         "onCommand:vscode-versionsystem-kit.build",
+        "onCommand:vscode-versionsystem-kit.upload",
         "onCommand:vscode-versionsystem-kit.others"
     ],
     "contributes": {
@@ -42,6 +43,10 @@
                 "title": "Versionsystem Kit: Build Client"
             },
             {
+                "command": "vscode-versionsystem-kit.upload",
+                "title": "Versionsystem Kit: Upload to server"
+            },
+            {
                 "command": "vscode-versionsystem-kit.dev",
                 "title": "Versionsystem Kit: Run in development mode"
             }
@@ -55,7 +60,7 @@
                     "default": 9000,
                     "scope": "resource",
                     "minimum": 1,
-                    "description": "开发服务器的默认端口号为9000，0到1023之间的端口号要保留给预定义服务，但80/433等端口也是可以使用的"
+                    "description": "开发服务器的默认端口号为9000, 0到1023之间的端口号要保留给预定义服务, 但80/433等端口也是可以使用的"
                 },
                 "vskit.logLevel": {
                     "type": "string",
@@ -81,6 +86,10 @@
                     "type": "string",
                     "scope": "resource",
                     "description": "项目名"
+                },
+                "vskit.remoteHost": {
+                    "type": "string",
+                    "description": "远程服务器的IP地址"
                 },
                 "vskit.remotePrefix": {
                     "type": "string",
@@ -134,7 +143,7 @@
                 },
                 "vskit.entries": {
                     "type": "array",
-                    "description": "所有的主体JS目录，需是一个数组"
+                    "description": "所有的主体JS目录, 需是一个数组"
                 },
                 "vskit.mainCSS": {
                     "type": "string",
@@ -160,10 +169,10 @@
                 },
                 "vskit.cssMatch": {
                     "type": "array",
-                    "description": "所有的CSS目录，需是一个数组，注入给核心CSS"
+                    "description": "所有的CSS目录, 需是一个数组, 注入给核心CSS"
                 },
                 "vskit.remoteFiles": {
-                    "type": "object",
+                    "type": "array",
                     "description": "这是个json"
                 },
                 "vskit.tmp": {

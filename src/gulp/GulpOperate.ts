@@ -47,7 +47,7 @@ export default function (): void {
                     .replace(/\/bower_components\//g, "/" + Configuration("projectName") + "/bower_components/")
             }))
             .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
-                logger.info("所有SCSS都已编译，合并于: " + file.basename)
+                logger.info("所有SCSS都已编译, 合并于: " + file.basename)
                 done(null, file)
             }))
             .pipe(gw.destDir("tmp"))
@@ -74,7 +74,7 @@ export default function (): void {
                     .replace(/..\/..\/bower_components/g, "/" + Configuration("projectName") + "/bower_components")
             }))
             .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
-                logger.info("所有HTML都已编译，合并为模板JS: " + file.basename)
+                logger.info("所有HTML都已编译, 合并为模板JS: " + file.basename)
                 done(null, file)
             }))
             .pipe(gw.destDir("tmp"))
@@ -94,7 +94,7 @@ export default function (): void {
             .pipe(ngAnnotate())
             .pipe(uglify({ logger }))
             .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
-                logger.info(file.basename + "已经执行完转义，注入，混淆操作")
+                logger.info(file.basename + "已经执行完转义, 注入, 混淆操作")
                 done(null, file)
             }))
             .on('error', logger.error)
@@ -119,7 +119,6 @@ export default function (): void {
         }), 'app.js').pipe(change((content) => {
             return content.replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
                 .replace(/app\/i18n/g, "/" + Configuration("projectName") + "/app/i18n")
-                .replace(/..\/..\/bower_components\/bootstrap\/dist\/js/g, "/" + Configuration("projectName") + "/bower_components/bootstrap/dist/js")
         })).pipe(gw.destDir("tmp"))
     })
 

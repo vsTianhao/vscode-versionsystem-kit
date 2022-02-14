@@ -1,9 +1,9 @@
 import * as vscode from "vscode"
-import * as path from "path"
 import LeftBarViewer from "./views/LeftBarViewer"
 import LoggerFactory from './LoggerFactory'
 import * as GulpCommands from './cmds/GulpCommands'
 import OtherCommands from './cmds/OtherCommands'
+import UploadCommands from './cmds/UploadCommands'
 import GulpOperate from "./gulp/GulpOperate"
 import AngularJsDefine from "./define/AngularJsDefine"
 
@@ -18,11 +18,13 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	context.subscriptions.push(vscode.commands.registerCommand("vscode-versionsystem-kit.build", GulpCommands.build))
 
+	context.subscriptions.push(vscode.commands.registerCommand("vscode-versionsystem-kit.upload", UploadCommands))
+
 	context.subscriptions.push(vscode.commands.registerCommand("vscode-versionsystem-kit.others", OtherCommands))
 
 	context.subscriptions.push(vscode.commands.registerCommand("vscode-versionsystem-kit.init", (): void => {
 		if (!vscode.workspace.rootPath) {
-			logger.error('在没有工作目录的情况下激活扩展会让插件无法初始化，请打开一个项目后重试')
+			logger.error('在没有工作目录的情况下激活扩展会让插件无法初始化, 请打开一个项目后重试')
 			logger.fatal('已经拒绝初始化')
 			return
 		}

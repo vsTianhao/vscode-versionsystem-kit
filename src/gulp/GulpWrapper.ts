@@ -14,24 +14,24 @@ export default class GulpWrapper {
 
     srcLoad(pathKey: string): NodeJS.ReadWriteStream {
         return gulp.src(Configuration(pathKey), this.getGulpOptions())
-            .on('error', this.logger.error)
+            .on('error', (message) => this.logger.error(message))
     }
 
     folderScan(pathKey: string): NodeJS.ReadWriteStream {
         return gulp.src(Configuration(pathKey), { cwd: path.join(Configuration("cwd"), Configuration(this.cwd)), read: false })
             .pipe(GulpSort())
-            .on('error', this.logger.error)
+            .on('error', (message) => this.logger.error(message))
     }
 
     dest(): NodeJS.ReadWriteStream {
         this.cwd = "dist"
         return gulp.dest("./", this.getGulpOptions())
-            .on('error', this.logger.error)
+            .on('error', (message) => this.logger.error(message))
     }
 
     destDir(pathKey?: string): NodeJS.ReadWriteStream {
         return gulp.dest(pathKey ? Configuration(pathKey) : "./", this.getGulpOptions())
-            .on('error', this.logger.error)
+            .on('error', (message) => this.logger.error(message))
     }
 
     watchFiles(pathKeyOrFiles: gulp.Globs): fs.FSWatcher {

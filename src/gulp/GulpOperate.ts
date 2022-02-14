@@ -22,6 +22,7 @@ import CommonFile from '../types/CommonFile'
 import CSSLoader from '../measure/CSSLoader'
 import Configuration from '../Configuration'
 import ServerPreparation from '../servers/ServerPreparation'
+import GulpSort from './GulpSort'
 
 export default function (): void {
     const logger = LoggerFactory("gulp")
@@ -68,6 +69,7 @@ export default function (): void {
                         return "components" + url
                     }
                 })))
+            .pipe(GulpSort())
             .pipe(concat("templates-cache.html.js"))
             .pipe(change((content) => {
                 return content.replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
@@ -97,7 +99,7 @@ export default function (): void {
                 logger.info(file.basename + "已经执行完转义, 注入, 混淆操作")
                 done(null, file)
             }))
-            .on('error', logger.error)
+            .on('error', (message) => this.logger.error(message))
     }
 
     task('build-app-main', (): void => {

@@ -163,7 +163,7 @@
                     "default": [
                         "main.*.js",
                         "app.*.js",
-                        "templates-*.*.js"
+                        "templates-cache*.js"
                     ],
                     "description": "编译后的js"
                 },

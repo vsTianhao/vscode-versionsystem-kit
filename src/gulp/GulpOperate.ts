@@ -70,7 +70,7 @@ export default function (): void {
                     }
                 })))
             .pipe(GulpSort())
-            .pipe(concat("templates-cache.html.js"))
+            .pipe(concat("templates-cache-html.js"))
             .pipe(change((content) => {
                 return content.replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
                     .replace(/..\/..\/bower_components/g, "/" + Configuration("projectName") + "/bower_components")
@@ -147,12 +147,12 @@ export default function (): void {
 
     task('compile-jsp', (): void => {
         return gw.srcLoad("backendMainHTML")
-            .pipe(inject(gw.folderScan('compileCSS'), {
+            .pipe(inject(gw.folderGet('compileCSS'), {
                 addPrefix: "app",
                 starttag: "<!-- generate-header -->",
                 endtag: "<!-- endinjector -->"
             }))
-            .pipe(inject(gw.folderScan('compileJS'), {
+            .pipe(inject(gw.folderGet('compileJS'), {
                 addPrefix: "app",
                 starttag: "<!-- generate-code-start -->",
                 endtag: "<!-- endinjector -->"

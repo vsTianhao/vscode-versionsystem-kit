@@ -17,9 +17,20 @@ export default class GulpWrapper {
             .on('error', (message) => this.logger.error(message))
     }
 
+    /**
+     * 扫描文件夹并排序
+     */
     folderScan(pathKey: string): NodeJS.ReadWriteStream {
         return gulp.src(Configuration(pathKey), { cwd: path.join(Configuration("cwd"), Configuration(this.cwd)), read: false })
             .pipe(GulpSort())
+            .on('error', (message) => this.logger.error(message))
+    }
+
+    /**
+     * 获取文件夹不排序
+     */
+    folderGet(pathKey: string): NodeJS.ReadWriteStream {
+        return gulp.src(Configuration(pathKey), { cwd: path.join(Configuration("cwd"), Configuration(this.cwd)), read: false })
             .on('error', (message) => this.logger.error(message))
     }
 

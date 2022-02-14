@@ -5,6 +5,11 @@ All notable changes to the "vscode-versionsystem-kit" extension will be document
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 
+## [1.0.1]
+修复了编译时在compile时错误的排序
+修复了log4js在`gulp.on("error")`中的self指针错误
+修复了上传时取消上传后报错(password必填)
+
 ## [1.0.0]
 可以上传了
 可以跳转`_.services`了

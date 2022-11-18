@@ -45,14 +45,14 @@ export default class GulpWrapper {
             .on('error', (message) => this.logger.error(message))
     }
 
-    watchFiles(pathKeyOrFiles: gulp.Globs): fs.FSWatcher {
+    watchFiles(pathKeyOrFiles: gulp.Globs, infoStr: string): fs.FSWatcher {
         let searchGlobs
         if (pathKeyOrFiles instanceof Array) {
             searchGlobs = pathKeyOrFiles
         } else {
             searchGlobs = Configuration(pathKeyOrFiles + "")
         }
-        this.logger.info("监听:" + searchGlobs)
+        this.logger.info(`监听此项${infoStr}:${searchGlobs}`)
         const watcherObj = gulp.watch(searchGlobs, this.getGulpOptions() as gulp.WatchOptions)
         this.watchArray.push(watcherObj)
         return watcherObj

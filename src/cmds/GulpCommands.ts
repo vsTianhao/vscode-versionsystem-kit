@@ -49,17 +49,17 @@ export async function run(type = "dev"): Promise<void> {
             await new Promise((resolve) => gulp.series('dev-index-html', "change-css-files", 'dev-css')(resolve))
             logger.info("前置准备已经妥善")
             const entries: string[] = Configuration("entries")
-            gw.watchFiles("entries").on('add', gulp.series('dev-index-html'))
+            gw.watchFiles("entries", "用于新增或删除js时,更新index.html中的引入列表").on('add', gulp.series('dev-index-html'))
                 .on('unlink', gulp.series('dev-index-html'))
-            gw.watchFiles("cssMatch").on('add', gulp.series('change-css-files'))
+            gw.watchFiles("cssMatch", "用于新增或删除scss时,更新app.scss中的引入列表").on('add', gulp.series('change-css-files'))
                 .on('unlink', gulp.series('change-css-files'))
                 .on("change", gulp.series('dev-css'))
-            gw.watchFiles("mainCSS").on("change", gulp.series('dev-css'))
-            gw.watchFiles(entries.concat([Configuration("frondendMainHTML"), Configuration("appHTML"), Configuration("componentsHTML"), Configuration("mainJS")])).on('change', (_path) => {
+            gw.watchFiles("mainCSS", "用于修改scss时,重新编译出app.css").on("change", gulp.series('dev-css'))
+            gw.watchFiles(entries.concat([Configuration("frondendMainHTML"), Configuration("appHTML"), Configuration("componentsHTML"), Configuration("mainJS")]), "用于js与html修改时,通知浏览器").on('change', (_path) => {
                 instanceServer.changed(_path)
                 logger.info("文件修改已通知:" + _path)
             })
-            gw.watchFiles("integratedCSS").on("change", (_path) => {
+            gw.watchFiles("integratedCSS", "用于css修改时,通知浏览器").on("change", (_path) => {
                 instanceServer.changed(_path)
                 logger.info("样式调整已经通知")
             })

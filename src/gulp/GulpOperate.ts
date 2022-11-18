@@ -44,7 +44,7 @@ export default function (): void {
         return CSSLoader()
             .pipe(cleanCss())
             .pipe(change((content) => {
-                return content.replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
+                return content.replace(/\.\.\/\.\.\/assets\//g, "/" + Configuration("projectName") + "/assets/")
                     .replace(/\/bower_components\//g, "/" + Configuration("projectName") + "/bower_components/")
             }))
             .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
@@ -72,8 +72,8 @@ export default function (): void {
             .pipe(GulpSort())
             .pipe(concat("templates-cache-html.js"))
             .pipe(change((content) => {
-                return content.replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
-                    .replace(/..\/..\/bower_components/g, "/" + Configuration("projectName") + "/bower_components")
+                return content.replace(/\.\.\/\.\.\/assets\//g, "/" + Configuration("projectName") + "/assets/")
+                    .replace(/\.\.\/\.\.\/bower_components/g, "/" + Configuration("projectName") + "/bower_components")
             }))
             .pipe(eventStream.map((file: CommonFile, done: (nope: void, file: CommonFile) => void) => {
                 logger.info("所有HTML都已编译, 合并为模板JS: " + file.basename)
@@ -105,7 +105,7 @@ export default function (): void {
     task('build-app-main', (): void => {
         logger.info("开始编译main (client/app/app.js)")
         return buildCoreJS([Configuration("mainJS")], 'main.js').pipe(change((content) => {
-            return content.replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
+            return content.replace(/\.\.\/\.\.\/assets\//g, "/" + Configuration("projectName") + "/assets/")
                 .replace(/.serviceRoot="[a-zA-Z:/0-9.]+"/, `.serviceRoot="/${Configuration("projectName")}"`)
                 .replace(/app\/i18n/g, "/" + Configuration("projectName") + "/app/i18n")
                 .replace(/bower_components\/kendo-ui/g, "/" + Configuration("projectName") + "/bower_components/kendo-ui")
@@ -119,7 +119,7 @@ export default function (): void {
             src: Configuration("entries"),
             srcBase: path.join(Configuration("cwd"), Configuration("rootPath"))
         }), 'app.js').pipe(change((content) => {
-            return content.replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
+            return content.replace(/\.\.\/\.\.\/assets\//g, "/" + Configuration("projectName") + "/assets/")
                 .replace(/app\/i18n/g, "/" + Configuration("projectName") + "/app/i18n")
         })).pipe(gw.destDir("tmp"))
     })
@@ -162,7 +162,7 @@ export default function (): void {
                     .replace(/app\//g, Configuration("projectName") + "/app/")
                     .replace(/assets\/js/g, "/" + Configuration("projectName") + "/assets/js")
                     .replace(/assets\/css/g, "/" + Configuration("projectName") + "/assets/css")
-                    .replace(/..\/..\/assets\//g, "/" + Configuration("projectName") + "/assets/")
+                    .replace(/\.\.\/\.\.\/assets\//g, "/" + Configuration("projectName") + "/assets/")
                     .replace(/bower_components\//g, "/" + Configuration("projectName") + "/bower_components/")
                     .replace(/common-lib\.js\?v=\d+/g, "common-lib.js?v=" + new Date().toJSON().replace(/:/g, "-"))
             }))

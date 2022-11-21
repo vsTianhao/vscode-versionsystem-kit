@@ -1,9 +1,8 @@
 # Change Log
 
-All notable changes to the "vscode-versionsystem-kit" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
+## [1.0.2]
+更新了一些提示消息
+修复了项目名只有两位的'../../'的匹配问题
 
 ## [1.0.1]
 修复了编译时在compile时错误的排序

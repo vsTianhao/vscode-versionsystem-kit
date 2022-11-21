@@ -1,18 +1,18 @@
 # vscode-versionsystem-kit README
 
-versionsystem在vscode中的开发工具
+vscode 开发基本插件
 
 ## Features
 
 - 开发服务器，就像grunt serve，只不过这是用gulp的
 - 信号服务器，就是grunt的livereload，负责修改后在浏览器刷新页面，启动和关闭都伴随开发服务器，可以查看连接情况
 - 编译
-- 打包 (暂时没好)
-- 上传到服务器 (暂时没好)
-- 让服务器打包 (暂时没好)
+- 打包
+- 上传到服务器
 - kendo template高亮语法识别 (有些DOM可能不行) (暂时没好)
 - angularjs的高亮跳转
     - 实现了文件内的scope跳转
+    - 实现了_.services.xx跳转
 - 其他考虑的...
 
 ## Requirements
